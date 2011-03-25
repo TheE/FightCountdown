@@ -1,0 +1,9 @@
+name: FightCountdown
+main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
+version: 0.1
+commands:
+  fight:
+    description: A simple countdown
+    usage: |
+           Incorrect usage of /<command>. Examples:
+           /<command> - A simple countdown
