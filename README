@@ -1,0 +1,47 @@
+FightCountdown - A simple Bukkit plugin to set up a countdown for arena fights.
+Copyright (C) 2011  EduardBaer
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+===============================================================================
+
+CHANGELOG:
+
+v0.3:
+- add announcement befor the countdown starts
+- add compatibility with Permissions
+
+v0.2:
+- change /fight to /fight <seconds>
+
+v0.1:
+- add /fight to count from 5 to 1
+
+
+===============================================================================
+
+DEPENDENCIES:
+
+- Bukkit (http://www.bukkit.org) - A SMP plugin API
+- Permissions (http://forums.bukkit.org/threads/5974/)
+		- An permission system for Bukkit
+
+
+===============================================================================
+
+COMMANDS:
+
+/fight <seconds> - set up a countdown.
+	fightcountdown.fight (to allow the command in Permissions)
