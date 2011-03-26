@@ -20,6 +20,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 public class FightCountdown extends JavaPlugin {
 	
 	public static PermissionHandler Permissions;
+	int count;
 	
 
 	@Override
@@ -53,21 +54,27 @@ public class FightCountdown extends JavaPlugin {
 					return false;
 				}
 				else {
-					int count = 0;
 					try{
-					count = Integer.valueOf(split[0]).intValue();
+						count = Integer.valueOf(split[0]).intValue();
 					} catch(NumberFormatException e) {return false;}
 					
-					broadcast("Be ready, the fight starts in:");
+					Thread counter = new Thread() {
+						public void run() {
+							broadcast("Be ready, the fight starts in:");
+
+							for (int i = count; i > 0; i--) {
+								broadcast(i + "...");
+								try{
+									Thread.sleep(1000);
+								} catch(InterruptedException e){}
+							}
+							
+							broadcast("Fight!");
+						}
+					};
 					
-					for (int i = count; i > 0; i--) {
-						broadcast(i + "...");
-						try{
-							Thread.sleep(1000);
-						} catch(InterruptedException e){}
-					}
-					broadcast("Fight!");
-	                    
+					counter.start();
+					
 				}
 
 			}
