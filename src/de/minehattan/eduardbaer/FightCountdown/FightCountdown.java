@@ -25,7 +25,8 @@ public class FightCountdown extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		System.out.println("FightCountdown is disabled!");
+		PluginDescriptionFile pdfFile = this.getDescription();
+		System.out.println(pdfFile.getName() + " is disabled!");
 	}
 
 	@Override
@@ -33,29 +34,52 @@ public class FightCountdown extends JavaPlugin {
 		setupPermissions();
 		
 		PluginDescriptionFile pdfFile = this.getDescription();
-		System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
 		
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		String[] split = args;
 		String commandName = command.getName().toLowerCase();
+		PluginDescriptionFile pdfFile = this.getDescription();
+		
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			
 			if (commandName.equals("fight")) {
 				
-				if (!(this).Permissions.has(player, "fightcountdown.fight")) {
-					send(player, "You don't have the right to use /fight!");
+				if (args.length == 0) {
+					return false;
+				}
+				
+				if (args[0].equals("info")) {
+					send(player, ChatColor.RED + pdfFile.getName() + " info page");
+					send(player, ChatColor.AQUA + "A simple countdown plugin for arena fights.");
+					send(player, ChatColor.AQUA + "Version: " + pdfFile.getVersion());
+					send(player, ChatColor.AQUA + "Author: " + pdfFile.getAuthors());
+					send(player, ChatColor.AQUA + "Website: " + pdfFile.getWebsite());
+					
 					return true;
 				}
 				
-				if (split.length == 0) {
-					return false;
+				else if (args[0].equals("help")) {
+					send(player, ChatColor.RED + pdfFile.getName() + " help page");
+					send(player, ChatColor.AQUA + "/fight help - this page");
+					send(player, ChatColor.AQUA + "/fight info - for information about this plugin");
+					send(player, ChatColor.AQUA + "/fight set <seconds> - to set up a countdown");
+					
+					return true;
 				}
-				else {
+				
+				else if (args[0].equals("set") && args[1] != "") {
+					
+					if (!(this).Permissions.has(player, "fightcountdown.fight")) {
+						send(player, "You don't have the right to use /fight set " + args[1] + "!");
+						System.out.println(player.getDisplayName() + " issued server command: /fight set " + args[1]);
+						return true;
+					}
+					
 					try{
-						count = Integer.valueOf(split[0]).intValue();
+						count = Integer.valueOf(args[1]).intValue();
 					} catch(NumberFormatException e) {return false;}
 					
 					Thread counter = new Thread() {
@@ -68,20 +92,23 @@ public class FightCountdown extends JavaPlugin {
 									Thread.sleep(1000);
 								} catch(InterruptedException e){}
 							}
-							
+								
 							broadcast("Fight!");
 						}
 					};
-					
+						
 					counter.start();
+						
+					return true;
 					
-				}
+				} //check if set
+				
+				return false;
 
-			}
-			return true;
-		}
+			} //check if fight
+		} //check if player
 	
-		return false;
+		return true;
 	}
 	
 	/**
@@ -94,13 +121,12 @@ public class FightCountdown extends JavaPlugin {
 	}
 	
 	/**
-	 * Sends a message to a player and into the server console
+	 * Sends a message to a player
 	 * @param player recipient of the message 
 	 * @param text the message
 	 */
 	public void send(Player player, String text) {
 		player.sendMessage(ChatColor.WHITE + text);
-		System.out.println("[FC -> " + player.getDisplayName() + "] " + text);
 	}
 	
 	/**
