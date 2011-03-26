@@ -1,9 +1,11 @@
 name: FightCountdown
 main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
-version: 0.3
+version: 0.4
+author: EduardBaer
+website: www.github.com/EduardBaer/FightCountdown
 commands:
   fight:
     description: A simple countdown
     usage: |
-           Incorrect usage of /<command>. Examples:
-           /<command> <seconds>
+           Incorrect usage of /<command>. 
+           See /<command> help for more information.

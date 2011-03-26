@@ -19,6 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 CHANGELOG:
 
+v0.4:
+- fix issue #6, the countdown no longer blocks the chat 
+	and several other things
+- add a help and an info page, use '/fight help' for more information
+- the countdown is now visible in the server console
+
 v0.3:
 - add announcement befor the countdown starts
 - add compatibility with Permissions
@@ -43,5 +49,7 @@ DEPENDENCIES:
 
 COMMANDS:
 
-/fight <seconds> - set up a countdown.
-	fightcountdown.fight (to allow the command in Permissions)
+/fight help - a help little help page
+/fight info - an info about this plugin
+/fight set <seconds> - set up a countdown.
+	fightcountdown.fight (to allow the '/fight set' command in Permissions)
