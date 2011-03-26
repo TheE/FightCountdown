@@ -1,6 +1,6 @@
 name: FightCountdown
 main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
-version: 0.2
+version: 0.3
 commands:
   fight:
     description: A simple countdown
