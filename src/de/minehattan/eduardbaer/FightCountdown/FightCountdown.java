@@ -45,7 +45,7 @@ public class FightCountdown extends JavaPlugin {
 			if (commandName.equals("fight")) {
 				
 				if (!(this).Permissions.has(player, "fightcountdown.fight")) {
-					player.sendMessage(ChatColor.WHITE + "You don't have the right to use this command!");
+					send(player, "You don't have the right to use /fight!");
 					return true;
 				}
 				
@@ -58,15 +58,15 @@ public class FightCountdown extends JavaPlugin {
 					count = Integer.valueOf(split[0]).intValue();
 					} catch(NumberFormatException e) {return false;}
 					
-					getServer().broadcastMessage(ChatColor.RED + "Be ready, the fight starts in:");
+					broadcast("Be ready, the fight starts in:");
 					
 					for (int i = count; i > 0; i--) {
-						getServer().broadcastMessage(ChatColor.RED + "" + i + "...");
+						broadcast(i + "...");
 						try{
 							Thread.sleep(1000);
 						} catch(InterruptedException e){}
 					}
-					getServer().broadcastMessage(ChatColor.RED + "Fight!");
+					broadcast("Fight!");
 	                    
 				}
 
@@ -77,6 +77,28 @@ public class FightCountdown extends JavaPlugin {
 		return false;
 	}
 	
+	/**
+	 * Sends a message to every online player and into the server console
+	 * @param text the message
+	 */
+	public void broadcast(String text) {
+		getServer().broadcastMessage(ChatColor.RED + text);
+		System.out.println("[FC] " + text);
+	}
+	
+	/**
+	 * Sends a message to a player and into the server console
+	 * @param player recipient of the message 
+	 * @param text the message
+	 */
+	public void send(Player player, String text) {
+		player.sendMessage(ChatColor.WHITE + text);
+		System.out.println("[FC -> " + player.getDisplayName() + "] " + text);
+	}
+	
+	/**
+	 * Setup this plugin for Permissions
+	 */
 	private void setupPermissions() {
 		Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
 
@@ -84,7 +106,6 @@ public class FightCountdown extends JavaPlugin {
 			if (test != null) {
 				this.Permissions = ((Permissions)test).getHandler();
 			} else {
-//				log.info("Permission system not detected, defaulting to OP");
 				System.out.println("Permission system not detected, defaulting to OP");
 			}
 		}
