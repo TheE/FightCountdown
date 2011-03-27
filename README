@@ -55,6 +55,19 @@ DEPENDENCIES:
 
 ===============================================================================
 
+PERMISSIONS:
+
+- fightcountdown.dice
+	for /fight dice
+- fightcountdown.next
+	for /fight next <message>
+- fightcountdown.next.clear
+	for /fight next clear
+- fightcountdown.set
+	for /fight set <seconds>
+
+===============================================================================
+
 COMMANDS:
 
 /fight help - a help little help page

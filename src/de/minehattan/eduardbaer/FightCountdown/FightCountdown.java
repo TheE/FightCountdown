@@ -2,7 +2,6 @@ package de.minehattan.eduardbaer.FightCountdown;
 
 
 import java.io.File;
-import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,7 +21,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  */
 public class FightCountdown extends JavaPlugin {
 	
-	public static PermissionHandler Permissions;
+	public PermissionHandler Permissions;
 	
 	static String maindir = "plugins/FightCountdown/";
 	
@@ -89,7 +88,7 @@ public class FightCountdown extends JavaPlugin {
 				
 				else if (args[0].equals("dice")) {
 					
-					if (!(this).Permissions.has(player, "fightcountdown.fight") && LoadConfig.usePermissions) {
+					if (!(this).Permissions.has(player, "fightcountdown.dice") && LoadConfig.usePermissions) {
 						send(player, "You don't have the right to use /fight dice!");
 						System.out.println(player.getDisplayName() + " issued server command: /fight dice");
 						return true;
@@ -108,7 +107,7 @@ public class FightCountdown extends JavaPlugin {
 				
 				else if (args[0].equals("next")) {
 					if (args.length == 2 && args[1].equals("clear")) {
-						if (!(this).Permissions.has(player, "fightcountdown.fight") && LoadConfig.usePermissions) {
+						if (!(this).Permissions.has(player, "fightcountdown.next.clear") && LoadConfig.usePermissions) {
 							send(player, "You don't have the right to use /fight next clear!");
 							System.out.println(player.getDisplayName() + " issued server command: /fight next clear");
 							return true;
@@ -119,7 +118,7 @@ public class FightCountdown extends JavaPlugin {
 						
 					}
 					else if (args.length >= 2) {
-						if (!(this).Permissions.has(player, "fightcountdown.fight") && LoadConfig.usePermissions) {
+						if (!(this).Permissions.has(player, "fightcountdown.next") && LoadConfig.usePermissions) {
 							send(player, "You don't have the right to use /fight next <message>!");
 							System.out.println(player.getDisplayName() + " issued server command: /fight next <message>");
 							return true;
@@ -144,7 +143,7 @@ public class FightCountdown extends JavaPlugin {
 				
 				else if (args[0].equals("set") && args[1] != "") {
 					
-					if (!(this).Permissions.has(player, "fightcountdown.fight") && LoadConfig.usePermissions) {
+					if (!(this).Permissions.has(player, "fightcountdown.set") && LoadConfig.usePermissions) {
 						send(player, "You don't have the right to use /fight set " + args[1] + "!");
 						System.out.println(player.getDisplayName() + " issued server command: /fight set " + args[1]);
 						return true;
