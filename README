@@ -23,6 +23,7 @@ v0.5:
 - add /fight dice command for choosing iron sword or bow
 - add /fight next command to display details of the next fight
 - add /fight next <message> command to set the details of the next fight
+- add /fight next clear command to delete the message
 
 v0.4:
 - fix issue #6, the countdown no longer blocks the chat 
@@ -59,5 +60,6 @@ COMMANDS:
 /fight dice - chooses between iron sword and bow
 /fight next - gives you the details of the next fight
 /fight next <message> - sets the details of the next fight
+/fight next clear - to delete the message
 /fight set <seconds> - set up a countdown.
 	fightcountdown.fight (to allow the '/fight set' command in Permissions)

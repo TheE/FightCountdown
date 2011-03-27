@@ -1,6 +1,8 @@
 package de.minehattan.eduardbaer.FightCountdown;
 
 
+import java.util.logging.Logger;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,7 +22,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 public class FightCountdown extends JavaPlugin {
 	
 	public static PermissionHandler Permissions;
-	String next;
+	String next = "";
 	int count;
 	
 
@@ -70,6 +72,7 @@ public class FightCountdown extends JavaPlugin {
 					send(player, ChatColor.AQUA + "/fight dice - chooses between iron sword and bow");
 					send(player, ChatColor.AQUA + "/fight next - gives you the details of the next fight");
 					send(player, ChatColor.AQUA + "/fight next <message> - sets the details of the next fight");
+					send(player, ChatColor.AQUA + "/fight next clear - to delete the message");
 					send(player, ChatColor.AQUA + "/fight set <seconds> - to set up a countdown");
 					
 					return true;
@@ -95,14 +98,32 @@ public class FightCountdown extends JavaPlugin {
 				}
 				
 				else if (args[0].equals("next")) {
-					if (args[1] != "") {
+					if (args.length == 2 && args[1].equals("clear")) {
 						if (!(this).Permissions.has(player, "fightcountdown.fight")) {
-							send(player, "You don't have the right to use /fight next " + args[1] + "!");
-							System.out.println(player.getDisplayName() + " issued server command: /fight next " + args[1]);
+							send(player, "You don't have the right to use /fight next clear!");
+							System.out.println(player.getDisplayName() + " issued server command: /fight next clear");
 							return true;
 						}
 						
-						next = args[1];
+						next = "";
+						return true;
+						
+					}
+					else if (args.length >= 2) {
+						if (!(this).Permissions.has(player, "fightcountdown.fight")) {
+							send(player, "You don't have the right to use /fight next <message>!");
+							System.out.println(player.getDisplayName() + " issued server command: /fight next <message>");
+							return true;
+						}
+						
+						next = "";
+						
+						for (int i = 1; i < args.length; i++) {
+							next = next.concat(args[i] + " ");
+						}
+
+						System.out.println("[FC] " + player.getDisplayName() + " sets next to: " + next);
+						
 						return true;
 						
 					}
