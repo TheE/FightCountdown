@@ -1,6 +1,6 @@
 name: FightCountdown
 main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
-version: 0.4
+version: 0.5
 author: EduardBaer
 website: www.github.com/EduardBaer/FightCountdown
 commands:
