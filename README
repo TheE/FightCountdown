@@ -24,6 +24,8 @@ v0.5:
 - add /fight next command to display details of the next fight
 - add /fight next <message> command to set the details of the next fight
 - add /fight next clear command to delete the message
+- add a configuration file. on default you have to use permissions and are able
+	to set up a countdown as long as you want
 
 v0.4:
 - fix issue #6, the countdown no longer blocks the chat 
