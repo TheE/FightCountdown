@@ -34,7 +34,8 @@ public class FightCountdown extends JavaPlugin {
 		setupPermissions();
 		
 		PluginDescriptionFile pdfFile = this.getDescription();
-		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
+		System.out.println(pdfFile.getName() + " version "
+				+ pdfFile.getVersion() + " is enabled!");
 		
 	}
 	
@@ -65,9 +66,29 @@ public class FightCountdown extends JavaPlugin {
 					send(player, ChatColor.RED + pdfFile.getName() + " help page");
 					send(player, ChatColor.AQUA + "/fight help - this page");
 					send(player, ChatColor.AQUA + "/fight info - for information about this plugin");
+					send(player, ChatColor.AQUA + "/fight dice - chooses between iron sword and bow");
 					send(player, ChatColor.AQUA + "/fight set <seconds> - to set up a countdown");
 					
 					return true;
+				}
+				
+				else if (args[0].equals("dice")) {
+					
+					if (!(this).Permissions.has(player, "fightcountdown.fight")) {
+						send(player, "You don't have the right to use /fight set " + args[1] + "!");
+						System.out.println(player.getDisplayName() + " issued server command: /fight set " + args[1]);
+						return true;
+					}
+					
+					if (Math.random() <= 0.5) {
+						broadcast("Allowed weapon in this fight is a bow");
+					}
+					else {
+						broadcast("Allowed weapon in this fight is an iron sword");
+					}
+					
+					return true;
+					
 				}
 				
 				else if (args[0].equals("set") && args[1] != "") {

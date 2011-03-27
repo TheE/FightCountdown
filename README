@@ -42,7 +42,7 @@ DEPENDENCIES:
 
 - Bukkit (http://www.bukkit.org) - A SMP plugin API
 - Permissions (http://forums.bukkit.org/threads/5974/)
-		- An permission system for Bukkit
+	- An permission system for Bukkit
 
 
 ===============================================================================
@@ -51,5 +51,6 @@ COMMANDS:
 
 /fight help - a help little help page
 /fight info - an info about this plugin
+/fight dice - chooses between iron sword and bow
 /fight set <seconds> - set up a countdown.
 	fightcountdown.fight (to allow the '/fight set' command in Permissions)
