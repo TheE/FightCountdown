@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 CHANGELOG:
 
+v0.6
+- add /fight brake command to stop the countdown
+
 v0.5:
 - add /fight dice command for choosing iron sword or bow
 - add /fight next command to display details of the next fight
@@ -65,6 +68,8 @@ PERMISSIONS:
 	for /fight next clear
 - fightcountdown.set
 	for /fight set <seconds>
+- fightcountdown.brake
+	for /fight brake
 
 ===============================================================================
 
@@ -77,4 +82,4 @@ COMMANDS:
 /fight next <message> - sets the details of the next fight
 /fight next clear - to delete the message
 /fight set <seconds> - set up a countdown.
-	fightcountdown.fight (to allow the '/fight set' command in Permissions)
+/fight brake - to stop the countdown

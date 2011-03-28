@@ -27,6 +27,26 @@ public class FightCountdown extends JavaPlugin {
 	
 	String next = "";
 	int count;
+	boolean runThread;
+	
+	Thread counter = new Thread() {
+		public void run() {
+			broadcast("Be ready, the fight starts in:");
+
+			for (int i = count; i > 0; i--) {
+				broadcast(i + "...");
+				try{
+					Thread.sleep(1000);
+				} catch(InterruptedException e){}
+				if (!(runThread)) {
+					break;
+				}
+			}
+			
+			if (runThread)
+				broadcast("Fight!");
+		}
+	};
 	
 
 	@Override
@@ -82,6 +102,7 @@ public class FightCountdown extends JavaPlugin {
 					send(player, ChatColor.AQUA + "/fight next <message> - sets the details of the next fight");
 					send(player, ChatColor.AQUA + "/fight next clear - to delete the message");
 					send(player, ChatColor.AQUA + "/fight set <seconds> - to set up a countdown");
+					send(player, ChatColor.AQUA + "/fight brake - to stop the countdown");
 					
 					return true;
 				}
@@ -149,6 +170,8 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 					
+					runThread = true;
+					
 					try{
 						count = Integer.valueOf(args[1]).intValue();
 					} catch(NumberFormatException e) {return false;}
@@ -157,26 +180,25 @@ public class FightCountdown extends JavaPlugin {
 						count = LoadConfig.maxCount;
 					}
 					
-					Thread counter = new Thread() {
-						public void run() {
-							broadcast("Be ready, the fight starts in:");
-
-							for (int i = count; i > 0; i--) {
-								broadcast(i + "...");
-								try{
-									Thread.sleep(1000);
-								} catch(InterruptedException e){}
-							}
-								
-							broadcast("Fight!");
-						}
-					};
-						
 					counter.start();
 						
 					return true;
 					
 				} //check if set
+				
+				else if (args[0].equals("brake") && args.length == 1) {
+					if (!(this).Permissions.has(player, "fightcountdown.brake") && LoadConfig.usePermissions) {
+						send(player, "You don't have the right to use /fight brake!");
+						System.out.println(player.getDisplayName() + " issued server command: /fight brake");
+						return true;
+					}
+					
+					if (counter.isAlive()) {
+						runThread = false;
+					}
+					
+					return true;
+				}
 				
 				return false;
 
