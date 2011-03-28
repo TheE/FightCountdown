@@ -29,24 +29,7 @@ public class FightCountdown extends JavaPlugin {
 	int count;
 	boolean runThread;
 	
-	Thread counter = new Thread() {
-		public void run() {
-			broadcast("Be ready, the fight starts in:");
 
-			for (int i = count; i > 0; i--) {
-				broadcast(i + "...");
-				try{
-					Thread.sleep(1000);
-				} catch(InterruptedException e){}
-				if (!(runThread)) {
-					break;
-				}
-			}
-			
-			if (runThread)
-				broadcast("Fight!");
-		}
-	};
 	
 
 	@Override
@@ -181,6 +164,25 @@ public class FightCountdown extends JavaPlugin {
 						count = LoadConfig.maxCount;
 					}
 					
+					Thread counter = new Thread() {
+						public void run() {
+							broadcast("Be ready, the fight starts in:");
+
+							for (int i = count; i > 0; i--) {
+								broadcast(i + "...");
+								try{
+									Thread.sleep(1000);
+								} catch(InterruptedException e){}
+								if (!(runThread)) {
+									break;
+								}
+							}
+							
+							if (runThread)
+								broadcast("Fight!");
+						}
+					};
+					
 					counter.start();
 						
 					return true;
@@ -194,10 +196,8 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 					
-					if (counter.isAlive()) {
-						runThread = false;
-						broadcast("Countdown stopped");
-					}
+					runThread = false;
+					broadcast("Countdown stopped");
 					
 					return true;
 				}
