@@ -149,6 +149,7 @@ public class FightCountdown extends JavaPlugin {
 						
 						for (int i = 1; i < args.length; i++) {
 							next = next.concat(args[i] + " ");
+							next = next.replace("&&", "§");
 						}
 
 						System.out.println("[FC] " + player.getDisplayName() + " sets next to: " + next);
@@ -162,7 +163,7 @@ public class FightCountdown extends JavaPlugin {
 					}
 				}
 				
-				else if (args[0].equals("set") && args[1] != "") {
+				else if (args[0].equals("set") && args.length == 2) {
 					
 					if (!(this).Permissions.has(player, "fightcountdown.set") && LoadConfig.usePermissions) {
 						send(player, "You don't have the right to use /fight set " + args[1] + "!");
@@ -184,7 +185,7 @@ public class FightCountdown extends JavaPlugin {
 						
 					return true;
 					
-				} //check if set
+				}
 				
 				else if (args[0].equals("brake") && args.length == 1) {
 					if (!(this).Permissions.has(player, "fightcountdown.brake") && LoadConfig.usePermissions) {
@@ -195,6 +196,7 @@ public class FightCountdown extends JavaPlugin {
 					
 					if (counter.isAlive()) {
 						runThread = false;
+						broadcast("Countdown stopped");
 					}
 					
 					return true;

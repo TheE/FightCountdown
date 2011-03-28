@@ -80,6 +80,7 @@ COMMANDS:
 /fight dice - chooses between iron sword and bow
 /fight next - gives you the details of the next fight
 /fight next <message> - sets the details of the next fight
+	you can use color codes ingame. just use && instead of §
 /fight next clear - to delete the message
 /fight set <seconds> - set up a countdown.
 /fight brake - to stop the countdown
