@@ -22,6 +22,9 @@ CHANGELOG:
 v0.6
 - add /fight brake command to stop the countdown
 
+v0.5.1
+- fix issue #27
+
 v0.5:
 - add /fight dice command for choosing iron sword or bow
 - add /fight next command to display details of the next fight
