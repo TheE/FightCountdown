@@ -2,6 +2,7 @@ package de.minehattan.eduardbaer.FightCountdown;
 
 
 import java.io.File;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -146,7 +147,7 @@ public class FightCountdown extends JavaPlugin {
 					}
 				}
 				
-				else if (args[0].equals("set") && args.length == 2) {
+				else if (args[0].equals("set") && args.length <= 2) {
 					
 					if (!(this).Permissions.has(player, "fightcountdown.set") && LoadConfig.usePermissions) {
 						send(player, "You don't have the right to use /fight set " + args[1] + "!");
@@ -156,9 +157,14 @@ public class FightCountdown extends JavaPlugin {
 					
 					runThread = true;
 					
-					try{
-						count = Integer.valueOf(args[1]).intValue();
-					} catch(NumberFormatException e) {return false;}
+					if (args.length == 1) {
+						count = LoadConfig.defaultCount;
+					}
+					else {
+						try{
+							count = Integer.valueOf(args[1]).intValue();
+						} catch(NumberFormatException e) {return false;}
+					}
 					
 					if (LoadConfig.maxCount != 0 && count > LoadConfig.maxCount) {
 						count = LoadConfig.maxCount;
@@ -187,6 +193,24 @@ public class FightCountdown extends JavaPlugin {
 						
 					return true;
 					
+				}
+				
+				else if (args[0].equals("set") && args.length == 3) {
+					List<Player> player1;
+					List<Player> player2;
+					
+					player1 = getServer().matchPlayer(args[1]);
+					player2 = getServer().matchPlayer(args[2]);
+					
+					if (player1.size() == 1 && player2.size() == 1) {
+						broadcast(player1.get(0).getDisplayName() + " has a health of " + player1.get(0).getHealth());
+						broadcast(player2.get(0).getDisplayName() + " has a health of " + player2.get(0).getHealth());
+					}
+					else {
+						send(player, "§cOne or both arguments are invalid");
+					}
+					
+					return true;
 				}
 				
 				else if (args[0].equals("brake") && args.length == 1) {

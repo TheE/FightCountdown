@@ -21,6 +21,7 @@ CHANGELOG:
 
 v0.6
 - add /fight brake command to stop the countdown
+- add defaultCount to config
 
 v0.5.1
 - fix issue #27
@@ -85,5 +86,5 @@ COMMANDS:
 /fight next <message> - sets the details of the next fight
 	you can use color codes ingame. just use && instead of §
 /fight next clear - to delete the message
-/fight set <seconds> - set up a countdown.
+/fight set [seconds] - set up a countdown. 
 /fight brake - to stop the countdown
