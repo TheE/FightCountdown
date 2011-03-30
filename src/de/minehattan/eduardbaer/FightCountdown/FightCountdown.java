@@ -91,7 +91,7 @@ public class FightCountdown extends JavaPlugin {
 					send(player, ChatColor.AQUA + "/fight next <message> - sets the details of the next fight");
 					send(player, ChatColor.AQUA + "/fight next clear - to delete the message");
 					send(player, ChatColor.AQUA + "/fight set [seconds] - to set up a countdown");
-					send(player, ChatColor.AQUA + "/fight brake - to stop the countdown");
+					send(player, ChatColor.AQUA + "/fight break - to stop the countdown");
 
 					return true;
 				}
@@ -204,9 +204,9 @@ public class FightCountdown extends JavaPlugin {
 					if (!hasPersmission(player, command, args, "set")) {
 						return true;
 					}
+					
+					runThread = true;
 
-					final List<Player> player1;
-					final List<Player> player2;
 
 					player1 = getServer().matchPlayer(args[1]);
 					player2 = getServer().matchPlayer(args[2]);
@@ -225,21 +225,28 @@ public class FightCountdown extends JavaPlugin {
 					else {
 						send(player, "§cOne or both arguments are invalid");
 					}
+					
 
 					Thread fight = new Thread() {
 						public void run() {
 							while(true) {
 								if (runThread) {
-									if (player1.get(0).getHealth() == 0) {
+									if (player1.get(0).getHealth() < 1) {
 										broadcast(LoadConfig.txtAnnounceWinner.replace("%player", player1.get(0).getDisplayName()));
 										break;
 									}
-									else if (player2.get(0).getHealth() == 0) {
+									else if (player2.get(0).getHealth() < 1) {
 										broadcast(LoadConfig.txtAnnounceWinner.replace("%player", player2.get(0).getDisplayName()));
 										break;
 									}
 								} else {
 									break;
+								}
+								
+								try {
+									Thread.sleep(3000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
 								}
 
 							}
@@ -252,14 +259,14 @@ public class FightCountdown extends JavaPlugin {
 					return true;
 				}
 
-				else if (args[0].equals("brake") && args.length == 1) {
+				else if (args[0].equals("break") && args.length == 1) {
 
-					if (!hasPersmission(player, command, args, "brake")) {
+					if (!hasPersmission(player, command, args, "break")) {
 						return true;
 					}
 
 					runThread = false;
-					broadcast(LoadConfig.txtBrake);
+					broadcast(LoadConfig.txtBreak);
 
 					return true;
 				}

@@ -24,7 +24,7 @@ v0.7:
 - announce the winner of a fight
 
 v0.6:
-- add /fight brake command to stop the countdown
+- add /fight break command to stop the countdown
 - add defaultCount to config for default countdown
 - add possibility to change the plugin messages
 - add possibility to change default chat colors
@@ -78,8 +78,8 @@ PERMISSIONS:
 	for /fight next clear
 - fightcountdown.set
 	for /fight set <seconds>
-- fightcountdown.brake
-	for /fight brake
+- fightcountdown.break
+	for /fight break
 
 ===============================================================================
 
@@ -93,4 +93,4 @@ COMMANDS:
 	you can use color codes ingame. just use && instead of §
 /fight next clear - to delete the message
 /fight set [seconds] - set up a countdown
-/fight brake - to stop the countdown
+/fight break - to stop the countdown

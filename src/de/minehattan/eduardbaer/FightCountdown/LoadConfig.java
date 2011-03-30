@@ -14,7 +14,7 @@ public class LoadConfig {
 	static String txtClearNext;
 	static String txtFightAnnounce;
 	static String txtStartFight;
-	static String txtBrake;
+	static String txtBreak;
 	static String txtAnnounceWinner;
 	
 	public static void loadMain() {
@@ -46,7 +46,7 @@ public class LoadConfig {
 		txtClearNext = config.getString("clearMessage", "§cMessage removed!");
 		txtFightAnnounce = config.getString("fightAnnounce", "Be ready, the fight starts in:");
 		txtStartFight = config.getString("startFight", "Fight!");
-		txtBrake = config.getString("brake", "§cCountdown stopped");
+		txtBreak = config.getString("break", "§cCountdown stopped");
 		txtAnnounceWinner = config.getString("announceWinner", "%player winns the fight!");
 		
 		config.save("FightCountdown text");
