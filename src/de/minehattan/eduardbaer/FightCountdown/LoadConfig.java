@@ -15,6 +15,7 @@ public class LoadConfig {
 	static String txtFightAnnounce;
 	static String txtStartFight;
 	static String txtBrake;
+	static String txtAnnounceWinner;
 	
 	public static void loadMain() {
 		String configFile = FightCountdown.maindir + "plugin.properties";
@@ -46,6 +47,7 @@ public class LoadConfig {
 		txtFightAnnounce = config.getString("fightAnnounce", "Be ready, the fight starts in:");
 		txtStartFight = config.getString("startFight", "Fight!");
 		txtBrake = config.getString("brake", "§cCountdown stopped");
+		txtAnnounceWinner = config.getString("announceWinner", "%player winns the fight!");
 		
 		config.save("FightCountdown text");
 		
