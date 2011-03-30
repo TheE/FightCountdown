@@ -176,7 +176,7 @@ public class FightCountdown extends JavaPlugin {
 
 					Thread counter = new Thread() {
 						public void run() {
-							broadcast(LoadConfig.txtFightAnnounce);
+							broadcast(LoadConfig.txtStartCountdown);
 
 							for (int i = count; i > 0; i--) {
 								broadcast(i + "...");
@@ -224,8 +224,10 @@ public class FightCountdown extends JavaPlugin {
 					}
 					else {
 						send(player, "§cOne or both arguments are invalid");
+						return true;
 					}
 					
+					broadcast(LoadConfig.txtAnnounceFight.replace("%player1", player1.get(0).getDisplayName()).replace("%player2", player2.get(0).getDisplayName()));
 
 					Thread fight = new Thread() {
 						public void run() {

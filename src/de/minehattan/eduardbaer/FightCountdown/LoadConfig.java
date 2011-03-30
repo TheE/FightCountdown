@@ -12,10 +12,11 @@ public class LoadConfig {
 	static String txtDiceBow;
 	static String txtDiceSword;
 	static String txtClearNext;
-	static String txtFightAnnounce;
+	static String txtStartCountdown;
 	static String txtStartFight;
 	static String txtBreak;
 	static String txtAnnounceWinner;
+	static String txtAnnounceFight;
 	
 	public static void loadMain() {
 		String configFile = FightCountdown.maindir + "plugin.properties";
@@ -44,10 +45,11 @@ public class LoadConfig {
 		txtDiceBow = config.getString("diceBow", "a bow");
 		txtDiceSword = config.getString("diceSword", "an iron sword");
 		txtClearNext = config.getString("clearMessage", "§cMessage removed!");
-		txtFightAnnounce = config.getString("fightAnnounce", "Be ready, the fight starts in:");
+		txtStartCountdown = config.getString("startCountdown", "Be ready, the fight starts in:");
 		txtStartFight = config.getString("startFight", "Fight!");
 		txtBreak = config.getString("break", "§cCountdown stopped");
 		txtAnnounceWinner = config.getString("announceWinner", "%player winns the fight!");
+		txtAnnounceFight = config.getString("announceFight", "%player1 and %player2 will fight!");
 		
 		config.save("FightCountdown text");
 		
