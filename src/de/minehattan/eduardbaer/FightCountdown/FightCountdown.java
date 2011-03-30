@@ -36,8 +36,8 @@ public class FightCountdown extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
-		System.out.println(pdfFile.getName() + " is disabled!");
-	}
+		System.out.println(pdfFile.getName() + " version "
+				+ pdfFile.getVersion() + " is disabled!");	}
 
 	@Override
 	public void onEnable() {
@@ -45,6 +45,7 @@ public class FightCountdown extends JavaPlugin {
 		new File(maindir).mkdirs();
 		
 		LoadConfig.loadMain();
+		LoadConfig.loadText();
 		
 		setupPermissions();
 		
@@ -85,7 +86,7 @@ public class FightCountdown extends JavaPlugin {
 					send(player, ChatColor.AQUA + "/fight next - gives you the details of the next fight");
 					send(player, ChatColor.AQUA + "/fight next <message> - sets the details of the next fight");
 					send(player, ChatColor.AQUA + "/fight next clear - to delete the message");
-					send(player, ChatColor.AQUA + "/fight set <seconds> - to set up a countdown");
+					send(player, ChatColor.AQUA + "/fight set [seconds] - to set up a countdown");
 					send(player, ChatColor.AQUA + "/fight brake - to stop the countdown");
 					
 					return true;
@@ -93,17 +94,15 @@ public class FightCountdown extends JavaPlugin {
 				
 				else if (args[0].equals("dice")) {
 					
-					if (!(this).Permissions.has(player, "fightcountdown.dice") && LoadConfig.usePermissions) {
-						send(player, "You don't have the right to use /fight dice!");
-						System.out.println(player.getDisplayName() + " issued server command: /fight dice");
+					if (!hasPersmission(player, command, args, "dice")) {
 						return true;
 					}
 					
 					if (Math.random() < 0.5) {
-						broadcast(ChatColor.AQUA + "Allowed weapon in this fight is a bow");
+						broadcast(LoadConfig.txtDice.replace("%weapon", LoadConfig.txtDiceBow));
 					}
 					else {
-						broadcast(ChatColor.AQUA + "Allowed weapon in this fight is an iron sword");
+						broadcast(LoadConfig.txtDice.replace("%weapon", LoadConfig.txtDiceSword));
 					}
 					
 					return true;
@@ -112,20 +111,21 @@ public class FightCountdown extends JavaPlugin {
 				
 				else if (args[0].equals("next")) {
 					if (args.length == 2 && args[1].equals("clear")) {
-						if (!(this).Permissions.has(player, "fightcountdown.next.clear") && LoadConfig.usePermissions) {
-							send(player, "You don't have the right to use /fight next clear!");
-							System.out.println(player.getDisplayName() + " issued server command: /fight next clear");
+						if (!hasPersmission(player, command, args, "next.clear")) {
 							return true;
 						}
 						
 						next = "";
+						
+						send(player, LoadConfig.txtClearNext);
+						
+						System.out.println("[FC] " + player.getDisplayName() + " removed next");
+						
 						return true;
 						
 					}
 					else if (args.length >= 2) {
-						if (!(this).Permissions.has(player, "fightcountdown.next") && LoadConfig.usePermissions) {
-							send(player, "You don't have the right to use /fight next <message>!");
-							System.out.println(player.getDisplayName() + " issued server command: /fight next <message>");
+						if (!hasPersmission(player, command, args, "next")) {
 							return true;
 						}
 						
@@ -135,6 +135,8 @@ public class FightCountdown extends JavaPlugin {
 							next = next.concat(args[i] + " ");
 							next = next.replace("&&", "§");
 						}
+						
+						send(player, next);
 
 						System.out.println("[FC] " + player.getDisplayName() + " sets next to: " + next);
 						
@@ -149,9 +151,7 @@ public class FightCountdown extends JavaPlugin {
 				
 				else if (args[0].equals("set") && args.length <= 2) {
 					
-					if (!(this).Permissions.has(player, "fightcountdown.set") && LoadConfig.usePermissions) {
-						send(player, "You don't have the right to use /fight set " + args[1] + "!");
-						System.out.println(player.getDisplayName() + " issued server command: /fight set " + args[1]);
+					if (!hasPersmission(player, command, args, "set")) {
 						return true;
 					}
 					
@@ -172,7 +172,7 @@ public class FightCountdown extends JavaPlugin {
 					
 					Thread counter = new Thread() {
 						public void run() {
-							broadcast("Be ready, the fight starts in:");
+							broadcast(LoadConfig.txtFightAnnounce);
 
 							for (int i = count; i > 0; i--) {
 								broadcast(i + "...");
@@ -185,7 +185,7 @@ public class FightCountdown extends JavaPlugin {
 							}
 							
 							if (runThread)
-								broadcast("Fight!");
+								broadcast(LoadConfig.txtStartFight);
 						}
 					};
 					
@@ -196,11 +196,19 @@ public class FightCountdown extends JavaPlugin {
 				}
 				
 				else if (args[0].equals("set") && args.length == 3) {
+					
+					if (!hasPersmission(player, command, args, "set")) {
+						return true;
+					}
+					
 					List<Player> player1;
 					List<Player> player2;
 					
 					player1 = getServer().matchPlayer(args[1]);
 					player2 = getServer().matchPlayer(args[2]);
+					
+					
+					
 					
 					if (player1.size() == 1 && player2.size() == 1) {
 						broadcast(player1.get(0).getDisplayName() + " has a health of " + player1.get(0).getHealth());
@@ -214,14 +222,13 @@ public class FightCountdown extends JavaPlugin {
 				}
 				
 				else if (args[0].equals("brake") && args.length == 1) {
-					if (!(this).Permissions.has(player, "fightcountdown.brake") && LoadConfig.usePermissions) {
-						send(player, "You don't have the right to use /fight brake!");
-						System.out.println(player.getDisplayName() + " issued server command: /fight brake");
+					
+					if (!hasPersmission(player, command, args, "brake")) {
 						return true;
 					}
 					
 					runThread = false;
-					broadcast("Countdown stopped");
+					broadcast(LoadConfig.txtBrake);
 					
 					return true;
 				}
@@ -239,7 +246,7 @@ public class FightCountdown extends JavaPlugin {
 	 * @param text the message
 	 */
 	public void broadcast(String text) {
-		getServer().broadcastMessage(ChatColor.RED + text);
+		getServer().broadcastMessage(LoadConfig.broadcastColor + text);
 		System.out.println("[FC] " + text);
 	}
 	
@@ -249,7 +256,7 @@ public class FightCountdown extends JavaPlugin {
 	 * @param text the message
 	 */
 	public void send(Player player, String text) {
-		player.sendMessage(ChatColor.WHITE + text);
+		player.sendMessage(LoadConfig.broadcastColor + text);
 	}
 	
 	/**
@@ -265,6 +272,28 @@ public class FightCountdown extends JavaPlugin {
 				System.out.println("Permission system not detected, defaulting to OP");
 			}
 		}
+	}
+	
+	public boolean hasPersmission(Player player, Command command, String[] args, String perm) {
+		if (!(this).Permissions.has(player, "fightcountdown." + perm) && LoadConfig.usePermissions) {
+			send(player, LoadConfig.txtPermission.replace("%command", "/fight " + arrayToString(args)));
+			System.out.println(player.getDisplayName() + " issued server command: /fight " + arrayToString(args));
+			return false;
+		}
+		return true;
+	}
+	
+	public static String arrayToString(String[] a) {
+		String separator = " ";
+	    StringBuffer result = new StringBuffer();
+	    if (a.length > 0) {
+	        result.append(a[0]);
+	        for (int i=1; i<a.length; i++) {
+	            result.append(separator);
+	            result.append(a[i]);
+	        }
+	    }
+	    return result.toString();
 	}
 
 }
