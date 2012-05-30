@@ -1,13 +1,15 @@
 name: FightCountdown
-main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
 version: 0.7
+description: A simple Bukkit plugin to set up a countdown for arena fights.
 author: EduardBaer
 website: www.github.com/EduardBaer/FightCountdown
+main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
 commands:
   fight:
-    description: A simple countdown
+    aliases: fc
+    description: A simple plugin to set up a countdown for arena fights.
     usage: |
-           Incorrect usage of /<command>. 
+           Incorrect usage of /<command>.
            See /<command> help for more information.
 permissions:
     fightcountdown.*:
