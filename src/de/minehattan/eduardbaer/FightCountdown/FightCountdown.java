@@ -8,12 +8,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 /**
  * FightCountdown for Bukkit
@@ -21,8 +17,6 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  * @author EduardBaer
  */
 public class FightCountdown extends JavaPlugin {
-
-	public PermissionHandler Permissions;
 
 	static String maindir = "plugins/FightCountdown/";
 
@@ -50,8 +44,6 @@ public class FightCountdown extends JavaPlugin {
 
 		LoadConfig.loadMain();
 		LoadConfig.loadText();
-
-		setupPermissions();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		System.out.println(pdfFile.getName() + " version "
@@ -129,7 +121,7 @@ public class FightCountdown extends JavaPlugin {
 
 					}
 					else if (args.length >= 2) {
-						if (!hasPersmission(player, command, args, "next")) {
+						if (!hasPersmission(player, command, args, "next.set")) {
 							return true;
 						}
 
@@ -207,12 +199,8 @@ public class FightCountdown extends JavaPlugin {
 					
 					runThread = true;
 
-
 					player1 = getServer().matchPlayer(args[1]);
 					player2 = getServer().matchPlayer(args[2]);
-
-
-
 
 					if (player1.size() == 1 && player2.size() == 1) {
 						if (player1.get(0).getHealth() < 20) {
@@ -223,7 +211,7 @@ public class FightCountdown extends JavaPlugin {
 						}
 					}
 					else {
-						send(player, "§cOne or both arguments are invalid");
+						send(player, "§cOne or both arguments are invalid.");
 						return true;
 					}
 					
@@ -299,28 +287,13 @@ public class FightCountdown extends JavaPlugin {
 		player.sendMessage(LoadConfig.broadcastColor + text);
 	}
 
-	/**
-	 * Setup this plugin for Permissions
-	 */
-	private void setupPermissions() {
-		Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
-
-		if (this.Permissions == null) {
-			if (test != null) {
-				this.Permissions = ((Permissions)test).getHandler();
-			} else {
-				System.out.println("Permission system not detected, defaulting to OP");
-			}
-		}
-	}
-
 	public boolean hasPersmission(Player player, Command command, String[] args, String perm) {
-		if (!(this).Permissions.has(player, "fightcountdown." + perm) && LoadConfig.usePermissions) {
-			send(player, LoadConfig.txtPermission.replace("%command", "/fight " + arrayToString(args)));
-			System.out.println(player.getDisplayName() + " issued server command: /fight " + arrayToString(args));
-			return false;
+		if (player.hasPermission("fightcountdown." + perm)) {
+			return true;
 		}
-		return true;
+		send(player, LoadConfig.txtPermission.replace("%command", "/fight " + arrayToString(args)));
+		System.out.println(player.getDisplayName() + " issued server command: /fight " + arrayToString(args));
+		return false;
 	}
 
 	public static String arrayToString(String[] a) {
