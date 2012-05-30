@@ -18,6 +18,7 @@ permissions:
             fightcountdown.next.clear : true
             fightcountdown.next.set : true
             fightcountdown.set: true
+            fightcountdown.reload: true
     fightcountdown.break:
         description: Allows you to break the countdown from /fight set
         default: op
@@ -38,4 +39,6 @@ permissions:
     fightcountdown.set:
         description: Allows you to start a fight between users and set the countdown
         default: op
-        
+    fightcountdown.reload:
+        description: Allows you to reload the configuration file
+        default: op

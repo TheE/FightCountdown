@@ -21,7 +21,7 @@ public class FightCountdown extends JavaPlugin {
 	private List<Player> player2;
 	private boolean runThread;
 	private String announceFight, announceWinner, breakMessage, clearMessage,
-			dice, diceBow, diceSword, startCountdown, startFight,
+			dice, diceBow, diceSword, reloadMessage, startCountdown, startFight,
 			needPermission, next;
 	private int count, defaultCount, maximumCount;
 
@@ -79,6 +79,7 @@ public class FightCountdown extends JavaPlugin {
 		dice = getConfig().getString("dice");
 		diceBow = getConfig().getString("diceBow");
 		diceSword = getConfig().getString("diceSword");
+		reloadMessage = getConfig().getString("reloadMessage");
 		startCountdown = getConfig().getString("startCountdown");
 		startFight = getConfig().getString("startFight");
 		needPermission = getConfig().getString("needPermission");
@@ -97,7 +98,20 @@ public class FightCountdown extends JavaPlugin {
 					return false;
 				}
 
-				if (args[0].equals("info")) {
+				else if (args[0].equals("reload")) {
+
+					if (!hasPersmission(player, command, args, "reload")) {
+						return true;
+					}
+					reloadConfig();
+					loadConfig();
+					send(player, reloadMessage);
+
+					return true;
+
+				}
+				
+				else if (args[0].equals("info")) {
 					send(player, ChatColor.RED + pdfFile.getName() + " info page");
 					send(player, ChatColor.AQUA + "A simple countdown plugin for arena fights.");
 					send(player, ChatColor.AQUA + "Version: " + pdfFile.getVersion());
