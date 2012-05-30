@@ -1,0 +1,22 @@
+# FightCountdown's configuration file
+# -----
+# defaultCount: the number /fight set beginns if no number is given
+# maximumCountdown: the maximum the /fight set command can count down from. Use 0 to disable.
+# -----
+# You may configure every message the plugin issues below.
+# %player1 and %player2 are variables. They stand for the given playernames.
+# %command stands for the given command.
+# -----
+
+defaultCount: 5
+maximumCount: 0
+announceFight: '%player1 and %player2 will fight!'
+announceWinner: '%player winns the fight!'
+breakMessage: 'Countdown stopped!'
+clearMessage: 'Message removed!'
+dice: 'Allowed weapon in this fight is %weapon!'
+diceBow: 'a bow'
+diceSword: 'an iron sword'
+startCountdown: 'Be ready, the fight starts in:'
+startFight: 'Fight!'
+needPermission: 'You do not have the permission to use %command!'

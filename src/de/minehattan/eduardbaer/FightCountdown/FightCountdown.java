@@ -17,19 +17,16 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author EduardBaer
  */
 public class FightCountdown extends JavaPlugin {
+	private List<Player> player1;
+	private List<Player> player2;
+	private boolean runThread;
+	private String announceFight, announceWinner, breakMessage, clearMessage,
+			dice, diceBow, diceSword, startCountdown, startFight,
+			needPermission, next;
+	private int count, defaultCount, maximumCount;
 
-	static String maindir = "plugins/FightCountdown/";
-
-	String next = "";
-	int count;
-
-	List<Player> player1;
-	List<Player> player2;
-
-	boolean runThread;
-
-
-
+	private File pluginFolder;
+	private File configFile;
 
 	@Override
 	public void onDisable() {
@@ -39,16 +36,52 @@ public class FightCountdown extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		pluginFolder = getDataFolder();
+		configFile = new File (pluginFolder, "config.yml");
+		next = "";
 
-		new File(maindir).mkdirs();
-
-		LoadConfig.loadMain();
-		LoadConfig.loadText();
+		createConfig();
+		saveConfig();
+		loadConfig();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		System.out.println(pdfFile.getName() + " version "
 				+ pdfFile.getVersion() + " is enabled!");
 
+	}
+	private void createConfig() {
+		if (!pluginFolder.exists()){
+			try {
+				pluginFolder.mkdir();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if (!configFile.exists()){
+			try {
+				configFile.createNewFile();
+				getConfig().options().copyDefaults(true);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private void loadConfig(){
+		defaultCount = getConfig().getInt("defaultCount");
+		maximumCount = getConfig().getInt("maximumCount");
+		
+		announceFight = getConfig().getString("announceFight");
+		announceWinner = getConfig().getString("announceWinner");
+		breakMessage = getConfig().getString("breakMessage");
+		clearMessage = getConfig().getString("clearMessage");
+		dice = getConfig().getString("dice");
+		diceBow = getConfig().getString("diceBow");
+		diceSword = getConfig().getString("diceSword");
+		startCountdown = getConfig().getString("startCountdown");
+		startFight = getConfig().getString("startFight");
+		needPermission = getConfig().getString("needPermission");
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
@@ -95,10 +128,10 @@ public class FightCountdown extends JavaPlugin {
 					}
 
 					if (Math.random() < 0.5) {
-						broadcast(LoadConfig.txtDice.replace("%weapon", LoadConfig.txtDiceBow));
+						broadcast(dice.replace("%weapon", diceBow));
 					}
 					else {
-						broadcast(LoadConfig.txtDice.replace("%weapon", LoadConfig.txtDiceSword));
+						broadcast(dice.replace("%weapon", diceSword));
 					}
 
 					return true;
@@ -113,7 +146,7 @@ public class FightCountdown extends JavaPlugin {
 
 						next = "";
 
-						send(player, LoadConfig.txtClearNext);
+						send(player, clearMessage);
 
 						System.out.println("[FC] " + player.getDisplayName() + " removed next");
 
@@ -154,7 +187,7 @@ public class FightCountdown extends JavaPlugin {
 					runThread = true;
 
 					if (args.length == 1) {
-						count = LoadConfig.defaultCount;
+						count = defaultCount;
 					}
 					else {
 						try{
@@ -162,13 +195,13 @@ public class FightCountdown extends JavaPlugin {
 						} catch(NumberFormatException e) {return false;}
 					}
 
-					if (LoadConfig.maxCount != 0 && count > LoadConfig.maxCount) {
-						count = LoadConfig.maxCount;
+					if (maximumCount != 0 && count > maximumCount) {
+						count = maximumCount;
 					}
 
 					Thread counter = new Thread() {
 						public void run() {
-							broadcast(LoadConfig.txtStartCountdown);
+							broadcast(startCountdown);
 
 							for (int i = count; i > 0; i--) {
 								broadcast(i + "...");
@@ -181,7 +214,7 @@ public class FightCountdown extends JavaPlugin {
 							}
 
 							if (runThread)
-								broadcast(LoadConfig.txtStartFight);
+								broadcast(startFight);
 						}
 					};
 
@@ -215,18 +248,18 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 					
-					broadcast(LoadConfig.txtAnnounceFight.replace("%player1", player1.get(0).getDisplayName()).replace("%player2", player2.get(0).getDisplayName()));
+					broadcast(announceFight.replace("%player1", player1.get(0).getDisplayName()).replace("%player2", player2.get(0).getDisplayName()));
 
 					Thread fight = new Thread() {
 						public void run() {
 							while(true) {
 								if (runThread) {
 									if (player1.get(0).getHealth() < 1) {
-										broadcast(LoadConfig.txtAnnounceWinner.replace("%player", player1.get(0).getDisplayName()));
+										broadcast(announceWinner.replace("%player", player1.get(0).getDisplayName()));
 										break;
 									}
 									else if (player2.get(0).getHealth() < 1) {
-										broadcast(LoadConfig.txtAnnounceWinner.replace("%player", player2.get(0).getDisplayName()));
+										broadcast(announceWinner.replace("%player", player2.get(0).getDisplayName()));
 										break;
 									}
 								} else {
@@ -256,7 +289,7 @@ public class FightCountdown extends JavaPlugin {
 					}
 
 					runThread = false;
-					broadcast(LoadConfig.txtBreak);
+					broadcast(breakMessage);
 
 					return true;
 				}
@@ -274,7 +307,7 @@ public class FightCountdown extends JavaPlugin {
 	 * @param text the message
 	 */
 	public void broadcast(String text) {
-		getServer().broadcastMessage(LoadConfig.broadcastColor + text);
+		getServer().broadcastMessage(ChatColor.AQUA + text);
 		System.out.println("[FC] " + text);
 	}
 
@@ -284,14 +317,14 @@ public class FightCountdown extends JavaPlugin {
 	 * @param text the message
 	 */
 	public void send(Player player, String text) {
-		player.sendMessage(LoadConfig.broadcastColor + text);
+		player.sendMessage(ChatColor.WHITE + text);
 	}
 
 	public boolean hasPersmission(Player player, Command command, String[] args, String perm) {
 		if (player.hasPermission("fightcountdown." + perm)) {
 			return true;
 		}
-		send(player, LoadConfig.txtPermission.replace("%command", "/fight " + arrayToString(args)));
+		send(player, needPermission.replace("%command", "/fight " + arrayToString(args)));
 		System.out.println(player.getDisplayName() + " issued server command: /fight " + arrayToString(args));
 		return false;
 	}
@@ -310,4 +343,3 @@ public class FightCountdown extends JavaPlugin {
 	}
 
 }
-
