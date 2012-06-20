@@ -35,7 +35,7 @@ permissions:
     fightcountdown.next.set:
         description: Allows you to set the /fight next message
         default: op
-    fightcountdown.next.cleark:
+    fightcountdown.next.clear:
         description: Allows you to clear the /fight next message
         default: op
     fightcountdown.set:
