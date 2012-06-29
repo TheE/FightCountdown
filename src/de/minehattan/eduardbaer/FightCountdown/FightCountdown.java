@@ -1,9 +1,10 @@
 package de.minehattan.eduardbaer.FightCountdown;
 
 import java.io.File;
-import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,15 +17,15 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author EduardBaer
  */
 public class FightCountdown extends JavaPlugin {
-	private List<Player> player1;
-	private List<Player> player2;
-	private boolean runThread;
+	private boolean lightning;
+	private Location lightCoords;
 	private String next;
-	private int count;
+	private int count, runs, cdTask;
 	private File configFile;
 
 	@Override
 	public void onDisable() {
+		Bukkit.getServer().getScheduler().cancelTasks(this);
 		PluginDescriptionFile pdfFile = this.getDescription();
 		System.out.println(pdfFile.getName() + " version "
 				+ pdfFile.getVersion() + " is disabled!");
@@ -135,96 +136,56 @@ public class FightCountdown extends JavaPlugin {
 					}
 				}
 
-				else if (args[0].equals("set") && args.length <= 2) {
+				else if (args[0].equals("set")) {
 					if (!hasPersmission(player, command, args, "set")) {
 						return true;
 					}
-					runThread = true;
 					if (args.length == 1) {
 						count = getConfig().getInt("defaultCount");
-					} else {
-						try {
-							count = Integer.valueOf(args[1]).intValue();
-						} catch (NumberFormatException e) {
+					} if (args.length == 2){
+						if (args[1].equals("-l") && hasPersmission(player, command, args, "set.lightning")) {
+							count = getConfig().getInt("defaultCount");
+							lightning = true;
+							lightCoords = player.getTargetBlock(null, 40).getLocation();
+						} else {
+							try {
+								count = Integer.valueOf(args[1]).intValue();
+							} catch (NumberFormatException e) {
+								return false;
+							}
+						}
+					} if (args.length == 3){
+						if (args[1].equals("-l") && hasPersmission(player, command, args, "set.lightning")) {
+							lightning = true;
+							lightCoords = player.getTargetBlock(null, 40).getLocation();
+							try {
+								count = Integer.valueOf(args[2]).intValue();
+							} catch (NumberFormatException e) {
+								return false;
+							}
+						} else {
 							return false;
 						}
-					}
+				}
 					if (getConfig().getInt("maximumCount") != 0 && count > getConfig().getInt("maximumCount")) {
 						count = getConfig().getInt("maximumCount");
 					}
-					Thread counter = new Thread() {
-						public void run() {
-							broadcast(getConfig().getString("startCountdown"));
-							for (int i = count; i > 0; i--) {
-								broadcast(i + "...");
-								try {
-									Thread.sleep(1000);
-								} catch (InterruptedException e) {
-								}
-								if (!(runThread)) {
-									break;
-								}
-							}
-							if (runThread)
-								broadcast(getConfig().getString("startFight"));
-						}
-					};
-					counter.start();
-					return true;
-				}
-
-				else if (args[0].equals("set") && args.length == 3) {
-					if (!hasPersmission(player, command, args, "set")) {
-						return true;
-					}
-
-					runThread = true;
-
-					player1 = getServer().matchPlayer(args[1]);
-					player2 = getServer().matchPlayer(args[2]);
-
-					if (player1.size() == 1 && player2.size() == 1) {
-						if (player1.get(0).getHealth() < 20) {
-							player1.get(0).setHealth(20);
-						}
-						if (player2.get(0).getHealth() < 20) {
-							player2.get(0).setHealth(20);
-						}
-					} else {
-						send(player, "§cOne or both arguments are invalid.");
-						return true;
-					}
-					broadcast(getConfig().getString("announceFight").replace("%player1",
-							player1.get(0).getDisplayName()).replace(
-							"%player2", player2.get(0).getDisplayName()));
-
-					Thread fight = new Thread() {
-						public void run() {
-							while (true) {
-								if (runThread) {
-									if (player1.get(0).getHealth() < 1) {
-										broadcast(getConfig().getString("announceWinner").replace(
-												"%player", player1.get(0)
-														.getDisplayName()));
-										break;
-									} else if (player2.get(0).getHealth() < 1) {
-										broadcast(getConfig().getString("announceWinner").replace(
-												"%player", player2.get(0)
-														.getDisplayName()));
-										break;
+					broadcast(getConfig().getString("startCountdown"));
+					runs = 0;
+					cdTask = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+								public void run() {
+									if (runs == count) {
+										broadcast(getConfig().getString("startFight"));
+										if (lightning){
+											lightCoords.getWorld().strikeLightningEffect(lightCoords);
+										}
+										stopTimer(cdTask);
+									} else {
+										broadcast(count-runs + "...");
 									}
-								} else {
-									break;
+									runs++;
 								}
-								try {
-									Thread.sleep(3000);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					};
-					fight.start();
+							}, 0, 20L);
 					return true;
 				}
 
@@ -232,8 +193,7 @@ public class FightCountdown extends JavaPlugin {
 					if (!hasPersmission(player, command, args, "break")) {
 						return true;
 					}
-					runThread = false;
-					broadcast(getConfig().getString("breakMessage"));
+					stopTimer(cdTask);
 					return true;
 				}
 				return false;
@@ -272,6 +232,10 @@ public class FightCountdown extends JavaPlugin {
 		System.out.println(player.getDisplayName()
 				+ " issued server command: /fight " + arrayToString(args));
 		return false;
+	}
+	
+	public void stopTimer(int task) {
+		this.getServer().getScheduler().cancelTask(task);
 	}
 
 	public static String arrayToString(String[] a) {

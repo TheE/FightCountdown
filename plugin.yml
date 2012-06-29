@@ -39,7 +39,10 @@ permissions:
         description: Allows you to clear the /fight next message
         default: op
     fightcountdown.set:
-        description: Allows you to start a fight between users and set the countdown
+        description: Allows you to start the countdown
+        default: op
+    fightcountdown.set.lightning:
+        description: Allows you to start the countdown and toggle a lightning when it ends
         default: op
     fightcountdown.reload:
         description: Allows you to reload the configuration file
