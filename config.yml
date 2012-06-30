@@ -2,6 +2,7 @@
 # -----
 # defaultCount: the number /fight set beginns if no number is given
 # maximumCountdown: the maximum the /fight set command can count down from. Use 0 to disable.
+# announcementSchedule: the schedule announcements are made before the tournaments in minutes (15 means 15 minutes before the tournament starts).
 # -----
 # You may configure every message the plugin issues below.
 # %player1 and %player2 are variables. They stand for the given playernames.
@@ -10,8 +11,8 @@
 
 defaultCount: 5
 maximumCount: 0
-announceFight: '%player1 and %player2 will fight!'
-announceWinner: '%player winns the fight!'
+announcementSchedule: 15, 30, 90, 150
+announceTournament: 'You want to be a champion? Join the tournament hosted by %host on %time and show what you can.'
 breakMessage: 'Countdown stopped!'
 clearMessage: 'Message removed!'
 dice: 'Allowed weapon in this fight is %weapon!'

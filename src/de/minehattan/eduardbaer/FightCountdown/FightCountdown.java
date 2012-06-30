@@ -1,12 +1,19 @@
 package de.minehattan.eduardbaer.FightCountdown;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * FightCountdown for Bukkit
  * 
- * @author EduardBaer
+ * @author EduardBaer, TheE
  */
 public class FightCountdown extends JavaPlugin {
 	private boolean lightning;
@@ -22,6 +29,10 @@ public class FightCountdown extends JavaPlugin {
 	private String next;
 	private int count, runs, cdTask;
 	private File configFile;
+	private FileConfiguration tournaments = null;
+	private File tournamentsFile = null;
+	private ArrayList<Tournament> t;
+	private Calendar dn;
 
 	@Override
 	public void onDisable() {
@@ -34,17 +45,19 @@ public class FightCountdown extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		configFile = new File(getDataFolder(), "config.yml");
+		tournamentsFile = new File(getDataFolder(), "tournaments.yml");
+		
 		next = "";
 
-		createConfig();
-		saveConfig();
+		createConfigs();
+		loadTournaments();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		System.out.println(pdfFile.getName() + " version "
 				+ pdfFile.getVersion() + " is enabled!");
 	}
 
-	private void createConfig() {
+	private void createConfigs() {
 		if (!getDataFolder().exists()) {
 			try {
 				getDataFolder().mkdir();
@@ -58,6 +71,44 @@ public class FightCountdown extends JavaPlugin {
 				getConfig().options().copyDefaults(true);
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+			saveConfig();
+		}
+		if (!tournamentsFile.exists()) {
+			try {
+				tournamentsFile.createNewFile();
+				getTournaments().options().copyDefaults(true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			saveTournaments();
+		}
+		getTournaments();
+	}
+	
+	private void loadTournaments(){
+		t = new ArrayList<Tournament>();
+		for(String key : tournaments.getConfigurationSection("tournaments").getKeys(false)){
+			Tournament tmpTour = new Tournament(key, tournaments.getString("tournaments."+key+".arena"), tournaments.getString("tournaments."+key+".host"));
+			t.add(tmpTour);
+			}
+		
+		dn = Calendar.getInstance();
+		dn.set(Calendar.MILLISECOND, 0);
+		String[] schedule =getConfig().getString("announcementSchedule").split(", ");
+		for (int i = 0; i < t.size(); i++){
+			for (int o = 0; o < schedule.length; o++){
+				if (t.get(i).isFuture(dn, Integer.parseInt(schedule[o]))){
+					final String time = t.get(i).getTime() + "h";
+					final String host = t.get(i).getHost();
+					this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+									public void run() {
+										broadcast(getConfig().getString("announceTournament").replaceAll("%time",time).replaceAll("%host", host));
+									}
+								},
+								20L * t.get(i).secondsFrom(dn, Integer.parseInt(schedule[o])));
+				}
+				dn.set(Calendar.MILLISECOND, 0);
 			}
 		}
 	}
@@ -114,8 +165,6 @@ public class FightCountdown extends JavaPlugin {
 						}
 						next = "";
 						send(player, getConfig().getString("clearMessage"));
-						System.out.println("[FC] " + player.getDisplayName()
-								+ " removed next");
 						return true;
 					} else if (args.length >= 2) {
 						if (!hasPersmission(player, command, args, "next.set")) {
@@ -127,8 +176,6 @@ public class FightCountdown extends JavaPlugin {
 							next = next.replace("&&", "§");
 						}
 						send(player, next);
-						System.out.println("[FC] " + player.getDisplayName()
-								+ " sets next to: " + next);
 						return true;
 					} else {
 						send(player, next);
@@ -249,6 +296,41 @@ public class FightCountdown extends JavaPlugin {
 			}
 		}
 		return result.toString();
+	}
+	
+	public void reloadTournaments() {
+		if (tournamentsFile == null) {
+			tournamentsFile = new File(getDataFolder(), "tournaments.yml");
+			tournaments.options().pathSeparator(',');
+		}
+		tournaments = YamlConfiguration.loadConfiguration(tournamentsFile);
+
+		// Look for defaults in the jar
+		InputStream defConfigStream = this.getResource("tournaments.yml");
+		if (defConfigStream != null) {
+			YamlConfiguration defConfig = YamlConfiguration
+					.loadConfiguration(defConfigStream);
+			tournaments.setDefaults(defConfig);
+		}
+	}
+
+	public FileConfiguration getTournaments() {
+		if (tournaments == null) {
+			this.reloadTournaments();
+		}
+		return tournaments;
+	}
+
+	public void saveTournaments() {
+		if (tournaments == null || tournamentsFile == null) {
+			return;
+		}
+		try {
+			tournaments.save(tournamentsFile);
+		} catch (IOException ex) {
+			this.getLogger().log(Level.SEVERE,
+					"Could not save config to " + tournamentsFile, ex);
+		}
 	}
 
 }
