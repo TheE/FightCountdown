@@ -5,19 +5,19 @@
 # announcementSchedule: the schedule announcements are made before the tournaments in minutes (15 means 15 minutes before the tournament starts).
 # -----
 # You may configure every message the plugin issues below.
-# %player1 and %player2 are variables. They stand for the given playernames.
+# %time stands for the time, %arena for the arena and %host for the hoster of the tournament. They are defined in the tournaments.yml.
 # %command stands for the given command.
 # -----
-
 defaultCount: 5
-maximumCount: 0
+maximumCount: 15
 announcementSchedule: 15, 30, 90, 150
-announceTournament: 'You want to be a champion? Join the tournament hosted by %host on %time and show what you can.'
+announceTournament: You want to be a champion? Join the tournament on %time in the %arena and show what you can.
 breakMessage: 'Countdown stopped!'
-clearMessage: 'Message removed!'
 dice: 'Allowed weapon in this fight is %weapon!'
 diceBow: 'a bow'
 diceSword: 'an iron sword'
+nextMessage: The next tournaments takes place on %time in the %arena. It's hosted by %host.
+nextMessageNone: There are no tournaments at the moment.
 reloadMessage: 'Configuration was successfully reloaded.'
 startCountdown: 'Be ready, the fight starts in:'
 startFight: 'Fight!'

@@ -26,7 +26,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class FightCountdown extends JavaPlugin {
 	private boolean lightning;
 	private Location lightCoords;
-	private String next;
 	private int count, runs, cdTask;
 	private File configFile;
 	private FileConfiguration tournaments = null;
@@ -46,8 +45,6 @@ public class FightCountdown extends JavaPlugin {
 	public void onEnable() {
 		configFile = new File(getDataFolder(), "config.yml");
 		tournamentsFile = new File(getDataFolder(), "tournaments.yml");
-		
-		next = "";
 
 		createConfigs();
 		loadTournaments();
@@ -68,19 +65,21 @@ public class FightCountdown extends JavaPlugin {
 		if (!configFile.exists()) {
 			try {
 				configFile.createNewFile();
-				getConfig().options().copyDefaults(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			getConfig().options().copyDefaults(true);
 			saveConfig();
 		}
+		
 		if (!tournamentsFile.exists()) {
 			try {
 				tournamentsFile.createNewFile();
-				getTournaments().options().copyDefaults(true);
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			getTournaments().options().copyDefaults(true);
 			saveTournaments();
 		}
 		getTournaments();
@@ -91,22 +90,23 @@ public class FightCountdown extends JavaPlugin {
 		for(String key : tournaments.getConfigurationSection("tournaments").getKeys(false)){
 			Tournament tmpTour = new Tournament(key, tournaments.getString("tournaments."+key+".arena"), tournaments.getString("tournaments."+key+".host"));
 			t.add(tmpTour);
-			}
-		
+		}
+	
 		dn = Calendar.getInstance();
 		dn.set(Calendar.MILLISECOND, 0);
 		String[] schedule =getConfig().getString("announcementSchedule").split(", ");
 		for (int i = 0; i < t.size(); i++){
 			for (int o = 0; o < schedule.length; o++){
-				if (t.get(i).isFuture(dn, Integer.parseInt(schedule[o]))){
-					final String time = t.get(i).getTime() + "h";
+				if (t.get(i).isAfter(dn, Integer.parseInt(schedule[o]))){
+					final String time = t.get(i).getTime();
+					final String arena = t.get(i).getArena();
 					final String host = t.get(i).getHost();
 					this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-									public void run() {
-										broadcast(getConfig().getString("announceTournament").replaceAll("%time",time).replaceAll("%host", host));
-									}
-								},
-								20L * t.get(i).secondsFrom(dn, Integer.parseInt(schedule[o])));
+								public void run() {
+									broadcast(getConfig().getString("announceTournament").replaceAll("%time",time).replaceAll("%arena",arena).replaceAll("%host", host));
+								}
+							},
+							20L * t.get(i).secondsFrom(dn, Integer.parseInt(schedule[o])));
 				}
 				dn.set(Calendar.MILLISECOND, 0);
 			}
@@ -130,19 +130,19 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 					reloadConfig();
+					reloadTournaments();
+					loadTournaments();
 					send(player, getConfig().getString("reloadMessage"));
 					return true;
 				}
 
 				else if (args[0].equals("help")) {
-					send(player, ChatColor.RED + "FightCountdown help page");
-					send(player, ChatColor.AQUA + "/fight help - this page");
-					send(player, ChatColor.AQUA + "/fight dice - chooses between iron sword and bow");
-					send(player, ChatColor.AQUA + "/fight next - gives you the details of the next fight");
-					send(player, ChatColor.AQUA + "/fight next <message> - sets the details of the next fight");
-					send(player, ChatColor.AQUA + "/fight next clear - to delete the message");
-					send(player, ChatColor.AQUA + "/fight set [seconds] - to set up a countdown");
-					send(player, ChatColor.AQUA + "/fight break - to stop the countdown");
+					send(player, "FightCountdown help page");
+					send(player, "/fight help - this page");
+					send(player, "/fight dice - chooses between stone sword and bow");
+					send(player, "/fight next - gives you the details when the next tournament takes place.");
+					send(player, "/fight set [-l] [seconds] - to set up a countdown");
+					send(player, "/fight break - to stop the countdown");
 					return true;
 				}
 
@@ -151,36 +151,34 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 					if (Math.random() < 0.5) {
-						broadcast(getConfig().getString("dice").replace("%weapon", getConfig().getString("diceBow")));
+						broadcast(getConfig().getString("dice").replaceAll("%weapon", getConfig().getString("diceBow")));
 					} else {
-						broadcast(getConfig().getString("dice").replace("%weapon", getConfig().getString("diceSword")));
+						broadcast(getConfig().getString("dice").replaceAll("%weapon", getConfig().getString("diceSword")));
 					}
 					return true;
 				}
 
 				else if (args[0].equals("next")) {
-					if (args.length == 2 && args[1].equals("clear")) {
-						if (!hasPersmission(player, command, args, "next.clear")) {
+						if (!hasPersmission(player, command, args, "next")) {
 							return true;
 						}
-						next = "";
-						send(player, getConfig().getString("clearMessage"));
-						return true;
-					} else if (args.length >= 2) {
-						if (!hasPersmission(player, command, args, "next.set")) {
+						int pointer = -1;;
+						for (int i = 0; i < t.size(); i++){
+							if (t.get(i).isAfter(dn)){
+								if (pointer == -1){
+									pointer = i;
+								} else if (t.get(i).isBefore(t.get(pointer).getFullDate())){
+									pointer = i;
+								}
+							}
+						}
+						if (pointer == -1){
+							send (player, getConfig().getString("nextMessageNone"));
 							return true;
 						}
-						next = "";
-						for (int i = 1; i < args.length; i++) {
-							next = next.concat(args[i] + " ");
-							next = next.replace("&&", "§");
-						}
-						send(player, next);
+						 send (player, getConfig().getString("nextMessage").replaceAll("%time", t.get(pointer).getDate()).replaceAll("%arena", t.get(pointer).getArena()).replaceAll("%host", t.get(pointer).getHost()));
+						
 						return true;
-					} else {
-						send(player, next);
-						return true;
-					}
 				}
 
 				else if (args[0].equals("set")) {
@@ -241,6 +239,7 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 					stopTimer(cdTask);
+					send(player, getConfig().getString("breakMessage"));
 					return true;
 				}
 				return false;
@@ -265,7 +264,7 @@ public class FightCountdown extends JavaPlugin {
 	 * @param text the message
 	 */
 	public void send(Player player, String text) {
-		player.sendMessage(ChatColor.WHITE + text);
+		player.sendMessage(ChatColor.AQUA + text);
 	}
 
 	public boolean hasPersmission(Player player, Command command,
@@ -273,7 +272,7 @@ public class FightCountdown extends JavaPlugin {
 		if (player.hasPermission("fightcountdown." + perm)) {
 			return true;
 		}
-		send(player,
+		send(player, ChatColor.RED + 
 				getConfig().getString("needPermission").replace("%command", "/fight "
 						+ arrayToString(args)));
 		System.out.println(player.getDisplayName()

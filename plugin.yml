@@ -27,16 +27,8 @@ permissions:
     fightcountdown.dice:
         description: Allows you to throw the dice to choose the weapon
         default: op
-    fightcountdown.next.*:
-        description: Allows you to clear and set the /fight next message
-        children:
-            fightcountdown.next.clear: true
-            fightcountdown.next.set: true
-    fightcountdown.next.set:
-        description: Allows you to set the /fight next message
-        default: op
-    fightcountdown.next.clear:
-        description: Allows you to clear the /fight next message
+    fightcountdown.next:
+        description: Allows you to use /fight next to see the date of next tournament
         default: op
     fightcountdown.set:
         description: Allows you to start the countdown

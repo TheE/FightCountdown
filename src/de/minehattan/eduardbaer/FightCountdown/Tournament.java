@@ -28,12 +28,15 @@ public class Tournament {
 	}
 	
 	public String getDate () {
-		date = new SimpleDateFormat ("dd.MM.yyyy");
-		return date.format(tournamentDate.getTime());
+		date = new SimpleDateFormat ("dd.MM.yyyy, HH.mm");
+		return date.format(tournamentDate.getTime()) + "h";
 	}
 	public String getTime(){
 		time = new SimpleDateFormat ("HH.mm");
-		return time.format(tournamentDate.getTime());
+		return time.format(tournamentDate.getTime()) + "h";
+	}
+	public Calendar getFullDate (){
+		return tournamentDate;
 	}
 	
 	public long secondsBetween(Calendar startDate, Calendar endDate) {
@@ -53,12 +56,20 @@ public class Tournament {
 		return presumedSeconds;
 	}
 
-	public boolean isFuture(Calendar date, int minutes){
+	public boolean isAfter(Calendar date, int minutes){
 		Calendar tmpDate = (Calendar) tournamentDate.clone();
 		tmpDate.add(Calendar.MINUTE, -minutes);
 		return tmpDate.getTime().after(date.getTime());
-		
 	}
+	
+	public boolean isAfter(Calendar date){
+		return tournamentDate.getTime().after(date.getTime());
+	}
+	
+	public boolean isBefore(Calendar date){
+		return tournamentDate.getTime().before(date.getTime());
+	}
+	
 	public long secondsFrom(Calendar StartDate, int minutes){
 		Calendar tmpDate = (Calendar) tournamentDate.clone();
 		tmpDate.add(Calendar.MINUTE, -minutes);
