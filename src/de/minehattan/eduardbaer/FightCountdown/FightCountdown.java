@@ -212,8 +212,14 @@ public class FightCountdown extends JavaPlugin {
 							return false;
 						}
 				}
-					if (getConfig().getInt("maximumCount") != 0 && count > getConfig().getInt("maximumCount")) {
-						count = getConfig().getInt("maximumCount");
+					if (count < 0) {
+						send (player, getConfig().getString("wrongCountdown").replaceAll("%maximumCount", Integer.toString(getConfig().getInt("maximumCount"))));
+						return true;
+					}
+					
+					if (count > getConfig().getInt("maximumCount") && (!player.hasPermission("set.bypass"))){
+						send (player, getConfig().getString("wrongCountdown").replaceAll("%maximumCount", Integer.toString(getConfig().getInt("maximumCount"))));
+						return true;
 					}
 					broadcast(getConfig().getString("startCountdown"));
 					runs = 0;

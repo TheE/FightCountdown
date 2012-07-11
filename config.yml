@@ -1,7 +1,7 @@
 # FightCountdown's configuration file
 # -----
 # defaultCount: the number /fight set beginns if no number is given
-# maximumCountdown: the maximum the /fight set command can count down from. Use 0 to disable.
+# maximumCountdown: the maximum the /fight set command can count down from.
 # announcementSchedule: the schedule announcements are made before the tournaments in minutes (15 means 15 minutes before the tournament starts).
 # -----
 # You may configure every message the plugin issues below.
@@ -16,9 +16,10 @@ breakMessage: 'Countdown stopped!'
 dice: 'Allowed weapon in this fight is %weapon!'
 diceBow: 'a bow'
 diceSword: 'an iron sword'
+needPermission: 'You do not have the permission to use %command!'
 nextMessage: The next tournaments takes place on %time in the %arena. It's hosted by %host.
 nextMessageNone: There are no tournaments at the moment.
 reloadMessage: 'Configuration was successfully reloaded.'
 startCountdown: 'Be ready, the fight starts in:'
 startFight: 'Fight!'
-needPermission: 'You do not have the permission to use %command!'
+wrongCountdown: 'The Countdown needs to be a number between 0 and %maximumCount.'

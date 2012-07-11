@@ -33,6 +33,9 @@ permissions:
     fightcountdown.set:
         description: Allows you to start the countdown
         default: op
+    fightcountdown.set.bypass:
+        description: Allows you to bypass the maximum countdown limit
+        default: op
     fightcountdown.set.lightning:
         description: Allows you to start the countdown and toggle a lightning when it ends
         default: op
