@@ -13,9 +13,11 @@ maximumCount: 15
 announcementSchedule: 15, 30, 90, 150
 announceTournament: You want to be a champion? Join the tournament on %time in the %arena and show what you can.
 breakMessage: 'Countdown stopped!'
-dice: 'Allowed weapon in this fight is %weapon!'
-diceBow: 'a bow'
-diceSword: 'an iron sword'
+countdownRunning: 'There is already a countdown running.'
+diceMessage: 'Allowed weapon in this fight is %weapon!'
+dice:
+- 'a bow'
+- 'an iron sword'
 needPermission: 'You do not have the permission to use %command!'
 nextMessage: The next tournaments takes place on %time in the %arena. It's hosted by %host.
 nextMessageNone: There are no tournaments at the moment.

@@ -68,9 +68,9 @@ public class FightCountdown extends JavaPlugin {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			getConfig().options().copyDefaults(true);
-			saveConfig();
 		}
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 		
 		if (!tournamentsFile.exists()) {
 			try {
@@ -150,11 +150,7 @@ public class FightCountdown extends JavaPlugin {
 					if (!hasPersmission(player, command, args, "dice")) {
 						return true;
 					}
-					if (Math.random() < 0.5) {
-						broadcast(getConfig().getString("dice").replaceAll("%weapon", getConfig().getString("diceBow")));
-					} else {
-						broadcast(getConfig().getString("dice").replaceAll("%weapon", getConfig().getString("diceSword")));
-					}
+					broadcast(getConfig().getString("diceMessage").replaceAll("%weapon", (String) getConfig().getList("dice").get((int) ((Math.random()*getConfig().getList("dice").size())))));
 					return true;
 				}
 
@@ -221,6 +217,11 @@ public class FightCountdown extends JavaPlugin {
 						send (player, getConfig().getString("wrongCountdown").replaceAll("%maximumCount", Integer.toString(getConfig().getInt("maximumCount"))));
 						return true;
 					}
+					
+					if (this.getServer().getScheduler().isCurrentlyRunning(cdTask) || this.getServer().getScheduler().isQueued(cdTask)){
+						send (player, getConfig().getString("countdownRunning"));
+						return true;
+					}
 					broadcast(getConfig().getString("startCountdown"));
 					runs = 0;
 					cdTask = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -239,7 +240,6 @@ public class FightCountdown extends JavaPlugin {
 							}, 0, 20L);
 					return true;
 				}
-
 				else if (args[0].equals("break") && args.length == 1) {
 					if (!hasPersmission(player, command, args, "break")) {
 						return true;
@@ -250,7 +250,23 @@ public class FightCountdown extends JavaPlugin {
 				}
 				return false;
 			} // check if fight
-		} // check if player
+		} else {
+			if (args[0].equals("break") && args.length == 1) {
+				stopTimer(cdTask);
+				sender.sendMessage(ChatColor.AQUA + getConfig().getString("breakMessage"));
+				return true;
+			}
+			if (args[0].equals("reload")) {
+				reloadConfig();
+				reloadTournaments();
+				loadTournaments();
+				sender.sendMessage(ChatColor.AQUA + getConfig().getString("reloadMessage"));
+				return true;
+			}
+		}
+			
+		
+		// check if player
 		return true;
 	}
 
