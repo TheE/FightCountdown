@@ -122,24 +122,81 @@ public class FightCountdown extends JavaPlugin {
 				if (args.length == 0) {
 					return false;
 				} else if (args[0].equals("next")) {
-					if (!player.hasPermission("fightcountdown.next")) {
+					if (!player.hasPermission("fc.tournament.next")) {
 						return true;
 					}
-					int pointer = 0;
+					updateTournaments();
 					if (t.isEmpty()) {
-						send(player, getConfig().getString("nextMessageNone"));
+						send(player, getConfig().getString("noTournaments"));
 					} else {
-						while (!t.get(pointer).isAfter(0)) {
-							pointer++;
-							if (pointer == t.size()) {
-								send(player, getConfig().getString("nextMessageNone"));
+						send(player, getConfig().getString("nextTournament").replaceAll("%time", t.get(0).getDate()).replaceAll("%arena", t.get(0).getArena())
+								.replaceAll("%host", t.get(0).getHost()));
+					}
+					return true;
+				} else if (args[0].equals("list")) {
+					if (!player.hasPermission("fc.tournament.list")) {
+						return true;
+					}
+					if (t.isEmpty()) {
+						send(player, getConfig().getString("noTournaments"));
+						return true;
+					}
+					if (args.length == 1) {
+						updateTournaments();
+						if (t.isEmpty()) {
+							send(player, getConfig().getString("noTournaments"));
+							return true;
+						}
+						int pages = (int) Math.ceil((double) (t.size()) / 8);
+						send(player,
+								ChatColor.GOLD
+										+ getConfig().getString("tournamentList").replaceFirst("%page", "1").replaceAll("%totalPages", String.valueOf(pages)));
+						for (int i = 0; i < 8; i++) {
+							if (i < t.size()) {
+								send(player,
+										getConfig().getString("tournamentListMask").replaceAll("%date", t.get(i).getDate())
+												.replaceAll("%arena", t.get(i).getArena()).replaceAll("%host", t.get(i).getHost()));
+							}
+						}
+						return true;
+					}
+					if (args.length == 2 && isInteger(args[1])) {
+						updateTournaments();
+						if (t.isEmpty()) {
+							send(player, getConfig().getString("noTournaments"));
+							return true;
+						}
+						int pages = (int) Math.ceil((double) (t.size()) / 8);
+
+						if (Integer.parseInt(args[1]) > pages) {
+							send(player, getConfig().getString("noPage").replaceAll("%page", args[1]));
+							return true;
+						}
+
+						send(player,
+								ChatColor.GOLD
+										+ getConfig().getString("tournamentList").replaceAll("%page", args[1]).replaceAll("%totalPages", String.valueOf(pages)));
+						for (int i = Integer.parseInt(args[1]) * 8 - 7; i < Integer.parseInt(args[1]) * 8; i++) {
+							System.out.println("i: " + i);
+							if (i < t.size()) {
+								send(player, t.get(i).getDate() + ", " + t.get(i).getArena() + ", " + t.get(i).getHost());
 								return true;
 							}
 						}
-						send(player,
-								getConfig().getString("nextMessage").replaceAll("%time", t.get(pointer).getDate())
-										.replaceAll("%arena", t.get(pointer).getArena()).replaceAll("%host", t.get(pointer).getHost()));
 					}
+					return false;
+				} else if (args[0].equals("help")) {
+					send(player, ChatColor.GOLD + "======FightCountdown help page - /tournament======");
+					send(player, "/tournament help - this page");
+					send(player, "/tournament next - show you details abaout the next tournament");
+					send(player, "/tournament list [#] - list future tournaments");
+					return true;
+				} else if (args[0].equals("reload")) {
+					if (!player.hasPermission("fc.tournament.reload")) {
+						return true;
+					}
+					reloadAllTournaments();
+					send(player, getConfig().getString("reloadMessage"));
 					return true;
 				}
 				return false;
@@ -148,16 +205,14 @@ public class FightCountdown extends JavaPlugin {
 				if (args.length == 0) {
 					return false;
 				} else if (args[0].equals("reload")) {
-					if (!player.hasPermission("fightcountdown.reload")) {
+					if (!player.hasPermission("fc.reload")) {
 						return true;
 					}
 					reloadConfig();
-					reloadTournaments();
-					loadTournaments();
 					send(player, getConfig().getString("reloadMessage"));
 					return true;
 				} else if (args[0].equals("help")) {
-					send(player, "FightCountdown help page");
+					send(player, ChatColor.GOLD + "======FightCountdown help page - /fight======");
 					send(player, "/fight help - this page");
 					send(player, "/fight dice - chooses between stone sword and bow");
 					send(player, "/fight next - gives you the details when the next tournament takes place.");
@@ -165,21 +220,21 @@ public class FightCountdown extends JavaPlugin {
 					send(player, "/fight break - to stop the countdown");
 					return true;
 				} else if (args[0].equals("dice")) {
-					if (!player.hasPermission("fightcountdown.dice")) {
+					if (!player.hasPermission("fc.fight.dice")) {
 						return true;
 					}
 					broadcast(getConfig().getString("diceMessage").replaceAll("%weapon",
 							(String) getConfig().getList("dice").get((int) ((Math.random() * getConfig().getList("dice").size())))));
 					return true;
 				} else if (args[0].equals("set")) {
-					if (!player.hasPermission("fightcountdown.set")) {
+					if (!player.hasPermission("fc.fight.set")) {
 						return true;
 					}
 					if (args.length == 1) {
 						count = getConfig().getInt("defaultCount");
 					}
 					if (args.length == 2) {
-						if (args[1].equals("-l") && player.hasPermission("fightcountdown.set.lightning")) {
+						if (args[1].equals("-l") && player.hasPermission("fc.fight.set.lightning")) {
 							count = getConfig().getInt("defaultCount");
 							lightning = true;
 							lightCoords = player.getTargetBlock(null, 40).getLocation();
@@ -192,7 +247,7 @@ public class FightCountdown extends JavaPlugin {
 						}
 					}
 					if (args.length == 3) {
-						if (args[1].equals("-l") && player.hasPermission("fightcountdown.set.lightning")) {
+						if (args[1].equals("-l") && player.hasPermission("fc.fight.set.lightning")) {
 							lightning = true;
 							lightCoords = player.getTargetBlock(null, 40).getLocation();
 							try {
@@ -209,7 +264,7 @@ public class FightCountdown extends JavaPlugin {
 						return true;
 					}
 
-					if (count > getConfig().getInt("maximumCount") && (!player.hasPermission("fightcountdown.set.bypass"))) {
+					if (count > getConfig().getInt("maximumCount") && (!player.hasPermission("fc.fight.set.bypass"))) {
 						send(player, getConfig().getString("wrongCountdown").replaceAll("%maximumCount", Integer.toString(getConfig().getInt("maximumCount"))));
 						return true;
 					}
@@ -236,7 +291,7 @@ public class FightCountdown extends JavaPlugin {
 					}, 0, 20L);
 					return true;
 				} else if (args[0].equals("break") && args.length == 1) {
-					if (!player.hasPermission("fightcountdown.break")) {
+					if (!player.hasPermission("fc.fight.break")) {
 						return true;
 					}
 					stopTimer(cdTask);
@@ -253,8 +308,7 @@ public class FightCountdown extends JavaPlugin {
 			}
 			if (args[0].equals("reload")) {
 				reloadConfig();
-				reloadTournaments();
-				loadTournaments();
+				reloadAllTournaments();
 				sender.sendMessage(ChatColor.AQUA + getConfig().getString("reloadMessage"));
 				return true;
 			}
@@ -287,6 +341,37 @@ public class FightCountdown extends JavaPlugin {
 
 	public void stopTimer(int task) {
 		this.getServer().getScheduler().cancelTask(task);
+	}
+
+	public void reloadAllTournaments() {
+		for (int i = 0; i < t.size(); i++) {
+			t.get(i).killTasks();
+		}
+		reloadTournaments();
+		loadTournaments();
+	}
+
+	public void updateTournaments() {
+		if (!t.isEmpty()) {
+			boolean updated = false;
+			while (!updated) {
+				if (t.get(0).isAfter(0)) {
+					updated = true;
+				} else {
+					t.remove(0);
+					if (getConfig().getBoolean("cleanTournaments")) {
+						tournaments.set("tournaments", null);
+						for (int i = 0; i < t.size(); i++) {
+							getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".arena", t.get(i).getArena());
+							getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".host", t.get(i).getHost());
+						}
+						saveTournaments();
+					}
+				}
+
+			}
+		}
+
 	}
 
 	public static String arrayToString(String[] a) {

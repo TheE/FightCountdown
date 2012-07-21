@@ -18,32 +18,69 @@ commands:
            Incorrect usage of /<command>.
            See /<command> help for more information.
 permissions:
-    fightcountdown.*:
+    fc.*:
         description: Gives access to all fightcountdown commands
         children:
-            fightcountdown.break: true
-            fightcountdown.dice: true
-            fightcountdown.next.set : true
-            fightcountdown.set: true
-            fightcountdown.reload: true
-    fightcountdown.break:
+            fc.reload: true
+            fc.fight.break: true
+            fc.fight.dice: true
+            fc.fight.set: true
+            fc.fight.set.bypass: true
+            fc.fight.set.lightning: true
+            fc.tournament.next: true
+            fc.tournament.list: true
+            fc.tournament.reload: true
+    fc.fight:
+        description: Gives access to all fight related commands
+        children:
+            fc.fight.break: true
+            fc.fight.dice: true
+            fc.fight.set: true
+            fc.fight.set.bypass: true
+            fc.fight.set.lightning: true
+    fc.fight.user:
+        description: Gives access to all harmless fight related commands
+        children:
+            fc.fight.break: true
+            fc.fight.dice: true
+            fc.fight.set: true
+    fc.tournament:
+        description: Gives access to all tournament related commands
+        children:
+            fc.tournament.next: true
+            fc.tournament.list: true
+            fc.tournament.reload: true
+    fc.tournament.user:
+        description: Gives access to all harmless tournament related commands
+        children:
+            fc.tournament.next: true
+            fc.tournament.list: true
+    fc.reload:
+        description: Allows you to reload the configuration file
+        default: op
+        children:
+            fc.tournament.reload: true
+    fc.fight.break:
         description: Allows you to break the countdown from /fight set
         default: op
-    fightcountdown.dice:
+    fc.fight.dice:
         description: Allows you to throw the dice to choose the weapon
         default: op
-    fightcountdown.next:
-        description: Allows you to use /tournament next to see the date of next tournament
-        default: op
-    fightcountdown.set:
+    fc.fight.set:
         description: Allows you to start the countdown
         default: op
-    fightcountdown.set.bypass:
+    fc.fight.set.bypass:
         description: Allows you to bypass the maximum countdown limit
         default: op
-    fightcountdown.set.lightning:
+    fc.fight.set.lightning:
         description: Allows you to start the countdown and toggle a lightning when it ends
         default: op
-    fightcountdown.reload:
-        description: Allows you to reload the configuration file
+    fc.tournament.next:
+        description: Allows you to use /tournament next to see the date of next tournament
+        default: op
+    fc.tournament.list:
+        description: Allows you to use /tournament list to see the list of future tournaments
+        default: op
+    fc.tournament.reload:
+        description: Allows you to use reload the tournaments file
         default: op

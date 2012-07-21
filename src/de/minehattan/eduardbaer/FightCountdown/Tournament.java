@@ -30,6 +30,7 @@ public class Tournament {
 			this.host = host;
 		} else
 			this.host = "";
+		System.out.println("Tournament erstellt: " + date);
 	}
 
 	public void startScheduler() {
@@ -38,6 +39,7 @@ public class Tournament {
 
 		for (int o = 0; o < schedule.length; o++) {
 			if (isAfter(Integer.parseInt(schedule[o]))) {
+				System.out.println("Schedule für: " + getDate() + ", " + secondsFrom(Integer.parseInt(schedule[o])));
 				tasks[o] = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
 						plugin.broadcast(plugin.getConfig().getString("announceTournament").replaceAll("%time", getTime()).replaceAll("%arena", arena)

@@ -13,16 +13,19 @@ cleanTournaments: true
 defaultCount: 5
 maximumCount: 15
 announcementSchedule: 15, 30, 90, 150
+dice:
+- 'a bow'
+- 'an iron sword'
 announceTournament: You want to be a champion? Join the tournament on %time in the %arena and show what you can.
 breakMessage: 'Countdown stopped!'
 countdownRunning: 'There is already a countdown running.'
 diceMessage: 'Allowed weapon in this fight is %weapon!'
-dice:
-- 'a bow'
-- 'an iron sword'
 needPermission: 'You do not have the permission to use %command!'
-nextMessage: The next tournaments takes place on %time in the %arena. It's hosted by %host.
-nextMessageNone: There are no tournaments at the moment.
+nextTournament: The next tournaments takes place on %time in the %arena. It's hosted by %host.
+noPage: There is no page %page.
+noTournaments: There are no tournaments at the moment.
+tournamentList: '==============Tournaments, page %page of %totalPages ==============:'
+tournamentListMask: '%date, takes place in %arena, hosted by %host'
 reloadMessage: 'Configuration was successfully reloaded.'
 startCountdown: 'Be ready, the fight starts in:'
 startFight: 'Fight!'
