@@ -1,5 +1,6 @@
 # FightCountdown's configuration file
 # -----
+# cleanTournaments: weather or not tournaments.yml should be sorted per date while old tournaments are removed.
 # defaultCount: the number /fight set beginns if no number is given
 # maximumCountdown: the maximum the /fight set command can count down from.
 # announcementSchedule: the schedule announcements are made before the tournaments in minutes (15 means 15 minutes before the tournament starts).
@@ -8,6 +9,7 @@
 # %time stands for the time, %arena for the arena and %host for the hoster of the tournament. They are defined in the tournaments.yml.
 # %command stands for the given command.
 # -----
+cleanTournaments: true
 defaultCount: 5
 maximumCount: 15
 announcementSchedule: 15, 30, 90, 150

@@ -7,7 +7,13 @@ main: de.minehattan.eduardbaer.FightCountdown.FightCountdown
 commands:
   fight:
     aliases: fc
-    description: A simple plugin to set up a countdown for arena fights.
+    description: Does everything related to arena fights.
+    usage: |
+           Incorrect usage of /<command>.
+           See /<command> help for more information.
+  tournament:
+    aliases: tm
+    description: Does everything related to tournaments.
     usage: |
            Incorrect usage of /<command>.
            See /<command> help for more information.
@@ -17,7 +23,6 @@ permissions:
         children:
             fightcountdown.break: true
             fightcountdown.dice: true
-            fightcountdown.next.clear : true
             fightcountdown.next.set : true
             fightcountdown.set: true
             fightcountdown.reload: true
@@ -28,7 +33,7 @@ permissions:
         description: Allows you to throw the dice to choose the weapon
         default: op
     fightcountdown.next:
-        description: Allows you to use /fight next to see the date of next tournament
+        description: Allows you to use /tournament next to see the date of next tournament
         default: op
     fightcountdown.set:
         description: Allows you to start the countdown
