@@ -29,6 +29,8 @@ permissions:
             fc.fight.set.lightning: true
             fc.tournament.next: true
             fc.tournament.list: true
+            fc.tournament.add: true
+            fc.tournament.remove: true
             fc.tournament.reload: true
     fc.fight:
         description: Gives access to all fight related commands
@@ -49,6 +51,8 @@ permissions:
         children:
             fc.tournament.next: true
             fc.tournament.list: true
+            fc.tournament.add: true
+            fc.tournament.remove: true
             fc.tournament.reload: true
     fc.tournament.user:
         description: Gives access to all harmless tournament related commands
@@ -80,6 +84,12 @@ permissions:
         default: op
     fc.tournament.list:
         description: Allows you to use /tournament list to see the list of future tournaments
+        default: op
+    fc.tournament.add:
+        description: Allows you to use add tournaments
+        default: op
+    fc.tournament.remove:
+        description: Allows you to use remove tournaments
         default: op
     fc.tournament.reload:
         description: Allows you to use reload the tournaments file

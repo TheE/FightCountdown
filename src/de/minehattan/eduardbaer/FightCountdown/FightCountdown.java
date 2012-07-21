@@ -3,6 +3,8 @@ package de.minehattan.eduardbaer.FightCountdown;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -177,7 +179,6 @@ public class FightCountdown extends JavaPlugin {
 								ChatColor.GOLD
 										+ getConfig().getString("tournamentList").replaceAll("%page", args[1]).replaceAll("%totalPages", String.valueOf(pages)));
 						for (int i = Integer.parseInt(args[1]) * 8 - 7; i < Integer.parseInt(args[1]) * 8; i++) {
-							System.out.println("i: " + i);
 							if (i < t.size()) {
 								send(player, t.get(i).getDate() + ", " + t.get(i).getArena() + ", " + t.get(i).getHost());
 								return true;
@@ -185,11 +186,91 @@ public class FightCountdown extends JavaPlugin {
 						}
 					}
 					return false;
+				} else if (args[0].equals("add") && args.length > 2) {
+					if (!player.hasPermission("fc.tournament.add")) {
+						return true;
+					}
+					try {
+						new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(args[1] + " " + args[2]);
+					} catch (ParseException e) {
+						send(player, getConfig().getString("tournamentSyntaxError"));
+						return true;
+					}
+					for (int i = 0; i < t.size(); i++) {
+						if (t.get(i).getUnformatedDate().equals(args[1] + " " + args[2])) {
+							send(player, getConfig().getString("tournamentExist").replaceAll("%date", args[1] + " " + args[2]));
+							return true;
+						}
+					}
+					String host = "";
+					String arena = "";
+					for (int i = 3; i < args.length; i++) {
+						if (args[i].startsWith("a:")) {
+							arena = args[i].substring(2);
+						} else if (args[i].startsWith("h:")) {
+							host = args[i].substring(2);
+						}
+					}
+
+					Tournament tmpTour = new Tournament(this, args[1] + " " + args[2], arena, host);
+					if (tmpTour.isAfter(0)) {
+						t.add(0, tmpTour);
+						t.get(0).startScheduler();
+						Collections.sort(t, Date_Order);
+						if (getConfig().getBoolean("cleanTournaments")) {
+							tournaments.set("tournaments", null);
+							for (int i = 0; i < t.size(); i++) {
+								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".arena", t.get(i).getArena());
+								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".host", t.get(i).getHost());
+							}
+							saveTournaments();
+						}
+						send(player, getConfig().getString("tournamentCreated"));
+
+					} else {
+						send(player, getConfig().getString("datePast"));
+					}
+					return true;
+				} else if ((args[0].equals("remove") || args[0].equals("rm")) && args.length == 3) {
+					if (!player.hasPermission("fc.tournament.remove")) {
+						return true;
+					}
+					try {
+						new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(args[1] + " " + args[2]);
+					} catch (ParseException e) {
+						send(player, getConfig().getString("tournamentSyntaxError"));
+						return true;
+					}
+					int pointer = -1;
+					for (int i = 0; i < t.size(); i++) {
+						if (t.get(i).getUnformatedDate().equals(args[1] + " " + args[2])) {
+							pointer = i;
+						}
+					}
+					if (pointer == -1) {
+						send(player, getConfig().getString("tournamentDoesntExist").replaceAll("%date", args[1] + " " + args[2]));
+					} else {
+						t.get(pointer).killTasks();
+						t.remove(pointer);
+						Collections.sort(t, Date_Order);
+						if (getConfig().getBoolean("cleanTournaments")) {
+							tournaments.set("tournaments", null);
+							for (int i = 0; i < t.size(); i++) {
+								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".arena", t.get(i).getArena());
+								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".host", t.get(i).getHost());
+							}
+							saveTournaments();
+						}
+						send(player, getConfig().getString("tournamentRemoved"));
+					}
+					return true;
 				} else if (args[0].equals("help")) {
 					send(player, ChatColor.GOLD + "======FightCountdown help page - /tournament======");
+					send(player, "/tournament add [date] [a:] [h:] - adds a tournament at the given date");
 					send(player, "/tournament help - this page");
-					send(player, "/tournament next - show you details abaout the next tournament");
 					send(player, "/tournament list [#] - list future tournaments");
+					send(player, "/tournament next - show you details abaout the next tournament");
+					send(player, "/tournament remove [date] - removes the tournament at the given date");
 					return true;
 				} else if (args[0].equals("reload")) {
 					if (!player.hasPermission("fc.tournament.reload")) {
@@ -213,11 +294,12 @@ public class FightCountdown extends JavaPlugin {
 					return true;
 				} else if (args[0].equals("help")) {
 					send(player, ChatColor.GOLD + "======FightCountdown help page - /fight======");
-					send(player, "/fight help - this page");
+					send(player, "/fight break - stops the countdown from /figth set");
 					send(player, "/fight dice - chooses between stone sword and bow");
+					send(player, "/fight help - this page");
 					send(player, "/fight next - gives you the details when the next tournament takes place.");
-					send(player, "/fight set [-l] [seconds] - to set up a countdown");
-					send(player, "/fight break - to stop the countdown");
+					send(player, "/fight set [-l] [seconds] - sets up a countdown");
+					
 					return true;
 				} else if (args[0].equals("dice")) {
 					if (!player.hasPermission("fc.fight.dice")) {

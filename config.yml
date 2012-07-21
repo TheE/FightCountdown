@@ -20,12 +20,17 @@ announceTournament: You want to be a champion? Join the tournament on %time in t
 breakMessage: 'Countdown stopped!'
 countdownRunning: 'There is already a countdown running.'
 diceMessage: 'Allowed weapon in this fight is %weapon!'
-needPermission: 'You do not have the permission to use %command!'
 nextTournament: The next tournaments takes place on %time in the %arena. It's hosted by %host.
 noPage: There is no page %page.
 noTournaments: There are no tournaments at the moment.
 tournamentList: '==============Tournaments, page %page of %totalPages ==============:'
 tournamentListMask: '%date, takes place in %arena, hosted by %host'
+tournamentSyntaxError: You need to enter the date in %syntax form.
+tournamentExist: There is already a tournament at %date.
+tournamentDoesntExist: There is no tournament at %date.
+tournamentCreated: Tournament created.
+tournamentRemoved: Tournament removed.
+datePast: The entered date lies in the past.
 reloadMessage: 'Configuration was successfully reloaded.'
 startCountdown: 'Be ready, the fight starts in:'
 startFight: 'Fight!'
