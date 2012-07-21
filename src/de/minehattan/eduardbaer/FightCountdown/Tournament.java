@@ -8,7 +8,9 @@ public class Tournament {
 	private final FightCountdown plugin;
 
 	private Calendar tournamentDate, now;
-	final private String arena, host;
+	private String arena;
+
+	private String host;
 	private SimpleDateFormat date, time;
 	private int[] tasks;
 
@@ -74,12 +76,12 @@ public class Tournament {
 	}
 
 	public String getDate() {
-		date = new SimpleDateFormat("dd.MM.yyyy, HH.mm");
+		date = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
 		return date.format(tournamentDate.getTime()) + "h";
 	}
 
 	public String getTime() {
-		time = new SimpleDateFormat("HH.mm");
+		time = new SimpleDateFormat("HH:mm");
 		return time.format(tournamentDate.getTime()) + "h";
 	}
 
@@ -96,7 +98,15 @@ public class Tournament {
 		return arena;
 	}
 
+	public void setArena(String arena) {
+		this.arena = arena;
+	}
+
 	public String getHost() {
 		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 }

@@ -186,43 +186,51 @@ public class FightCountdown extends JavaPlugin {
 						}
 					}
 					return false;
-				} else if (args[0].equals("add") && args.length > 2) {
+				} else if (args[0].equals("add") && args.length > 1) {
 					if (!player.hasPermission("fc.tournament.add")) {
 						return true;
 					}
+					System.out.println(args.length);
 					try {
-						new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(args[1] + " " + args[2]);
+						new SimpleDateFormat("dd.MM.yyyy-HH:mm").parse(args[1]);
 					} catch (ParseException e) {
-						send(player, getConfig().getString("tournamentSyntaxError"));
+						send(player, getConfig().getString("tournamentSyntaxError").replaceAll("%syntax", "dd.MM.yyyy-HH:mm"));
 						return true;
 					}
 					for (int i = 0; i < t.size(); i++) {
-						if (t.get(i).getUnformatedDate().equals(args[1] + " " + args[2])) {
-							send(player, getConfig().getString("tournamentExist").replaceAll("%date", args[1] + " " + args[2]));
+						if (t.get(i).getUnformatedDate().equals(args[1].replace('-', ' ').replace('.', '-'))) {
+							send(player, getConfig().getString("tournamentExist").replaceAll("%date", args[1]));
 							return true;
 						}
 					}
 					String host = "";
 					String arena = "";
-					for (int i = 3; i < args.length; i++) {
+					for (int i = 2; i < args.length; i++) {
 						if (args[i].startsWith("a:")) {
 							arena = args[i].substring(2);
 						} else if (args[i].startsWith("h:")) {
 							host = args[i].substring(2);
+						} else {
+							return false;
 						}
 					}
 
-					Tournament tmpTour = new Tournament(this, args[1] + " " + args[2], arena, host);
+					Tournament tmpTour = new Tournament(this, args[1].replace('-', ' ').replace('.', '-'), arena, host);
 					if (tmpTour.isAfter(0)) {
 						t.add(0, tmpTour);
 						t.get(0).startScheduler();
-						Collections.sort(t, Date_Order);
 						if (getConfig().getBoolean("cleanTournaments")) {
+							Collections.sort(t, Date_Order);
 							tournaments.set("tournaments", null);
 							for (int i = 0; i < t.size(); i++) {
 								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".arena", t.get(i).getArena());
 								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".host", t.get(i).getHost());
 							}
+							saveTournaments();
+						} else {
+							getTournaments().set("tournaments." + t.get(0).getUnformatedDate() + ".arena", t.get(0).getArena());
+							getTournaments().set("tournaments." + t.get(0).getUnformatedDate() + ".host", t.get(0).getHost());
+							Collections.sort(t, Date_Order);
 							saveTournaments();
 						}
 						send(player, getConfig().getString("tournamentCreated"));
@@ -231,24 +239,24 @@ public class FightCountdown extends JavaPlugin {
 						send(player, getConfig().getString("datePast"));
 					}
 					return true;
-				} else if ((args[0].equals("remove") || args[0].equals("rm")) && args.length == 3) {
+				} else if ((args[0].equals("remove") || args[0].equals("rm")) && args.length == 2) {
 					if (!player.hasPermission("fc.tournament.remove")) {
 						return true;
 					}
 					try {
-						new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(args[1] + " " + args[2]);
+						new SimpleDateFormat("dd.MM.yyyy-HH:mm").parse(args[1]);
 					} catch (ParseException e) {
-						send(player, getConfig().getString("tournamentSyntaxError"));
+						send(player, getConfig().getString("tournamentSyntaxError").replaceAll("%syntax", "dd.MM.yyyy-HH:mm"));
 						return true;
 					}
 					int pointer = -1;
 					for (int i = 0; i < t.size(); i++) {
-						if (t.get(i).getUnformatedDate().equals(args[1] + " " + args[2])) {
+						if (t.get(i).getUnformatedDate().equals(args[1].replace('-', ' ').replace('.', '-'))) {
 							pointer = i;
 						}
 					}
 					if (pointer == -1) {
-						send(player, getConfig().getString("tournamentDoesntExist").replaceAll("%date", args[1] + " " + args[2]));
+						send(player, getConfig().getString("tournamentDoesntExist").replaceAll("%date", args[1]));
 					} else {
 						t.get(pointer).killTasks();
 						t.remove(pointer);
@@ -264,9 +272,46 @@ public class FightCountdown extends JavaPlugin {
 						send(player, getConfig().getString("tournamentRemoved"));
 					}
 					return true;
+				} else if (args[0].equals("edit") && args.length > 2) {
+					System.out.println(args.length);
+					if (!player.hasPermission("fc.tournament.edit")) {
+						return true;
+					}
+					try {
+						new SimpleDateFormat("dd.MM.yyyy-HH:mm").parse(args[1]);
+					} catch (ParseException e) {
+						send(player, getConfig().getString("tournamentSyntaxError").replaceAll("%syntax", "dd.MM.yyyy-HH:mm"));
+						return true;
+					}
+					int pointer = -1;
+					for (int i = 0; i < t.size(); i++) {
+						if (t.get(i).getUnformatedDate().equals(args[1].replace('-', ' ').replace('.', '-'))) {
+							pointer = i;
+						}
+					}
+					if (pointer == -1) {
+						send(player, getConfig().getString("tournamentDoesntExist").replaceAll("%date", args[1]));
+					} else {
+						for (int i = 2; i < args.length; i++) {
+							if (args[i].startsWith("a:")) {
+								t.get(pointer).setArena(args[i].substring(2));
+								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".arena", t.get(i).getArena());
+								saveTournaments();
+							} else if (args[i].startsWith("h:")) {
+								t.get(pointer).setHost(args[i].substring(2));
+								getTournaments().set("tournaments." + t.get(i).getUnformatedDate() + ".host", t.get(i).getHost());
+								saveTournaments();
+							} else {
+								return false;
+							}
+						}
+						send(player, getConfig().getString("tournamentUpdated"));
+					}
+					return true;
 				} else if (args[0].equals("help")) {
 					send(player, ChatColor.GOLD + "======FightCountdown help page - /tournament======");
 					send(player, "/tournament add [date] [a:] [h:] - adds a tournament at the given date");
+					send(player, "/tournament edit [date] [a:] [h:] - edits the tournament at the given date");
 					send(player, "/tournament help - this page");
 					send(player, "/tournament list [#] - list future tournaments");
 					send(player, "/tournament next - show you details abaout the next tournament");
@@ -299,7 +344,7 @@ public class FightCountdown extends JavaPlugin {
 					send(player, "/fight help - this page");
 					send(player, "/fight next - gives you the details when the next tournament takes place.");
 					send(player, "/fight set [-l] [seconds] - sets up a countdown");
-					
+
 					return true;
 				} else if (args[0].equals("dice")) {
 					if (!player.hasPermission("fc.fight.dice")) {

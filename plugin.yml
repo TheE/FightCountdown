@@ -30,6 +30,7 @@ permissions:
             fc.tournament.next: true
             fc.tournament.list: true
             fc.tournament.add: true
+            fc.tournament.edit: true
             fc.tournament.remove: true
             fc.tournament.reload: true
     fc.fight:
@@ -52,6 +53,7 @@ permissions:
             fc.tournament.next: true
             fc.tournament.list: true
             fc.tournament.add: true
+            fc.tournament.edit: true
             fc.tournament.remove: true
             fc.tournament.reload: true
     fc.tournament.user:
@@ -86,10 +88,13 @@ permissions:
         description: Allows you to use /tournament list to see the list of future tournaments
         default: op
     fc.tournament.add:
-        description: Allows you to use add tournaments
+        description: Allows you to add tournaments
+        default: op
+    fc.tournament.edit:
+        description: Allows you to edit tournaments
         default: op
     fc.tournament.remove:
-        description: Allows you to use remove tournaments
+        description: Allows you to remove tournaments
         default: op
     fc.tournament.reload:
         description: Allows you to use reload the tournaments file
